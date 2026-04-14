@@ -1,0 +1,38 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.4.0",
+    "axios": "^1.13.4",
+    "chart.js": "^4.5.1",
+    "dompurify": "^3.3.1",
+    "emoji-picker-element": "^1.29.1",
+    "file-saver": "^2.0.5",
+    "github-markdown-css": "^5.9.0",
+    "html-docx-js-typescript": "^0.1.5",
+    "html2pdf.js": "^0.14.0",
+    "markdown-it": "^14.1.1",
+    "marked": "^17.0.2",
+    "md-editor-v3": "^6.3.1",
+    "mermaid": "^11.12.3",
+    "rrweb-player": "^1.0.0-alpha.4",
+    "vue": "^3.5.24",
+    "vue-chartjs": "^5.3.3",
+    "vue-click-outside": "^1.1.0",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.6.4",
+    "vue3-lottie": "^3.3.1",
+    "vuedraggable": "^4.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.2.4"
+  }
+}

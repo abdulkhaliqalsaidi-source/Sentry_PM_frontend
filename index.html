@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentry Clone</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- Load rrweb (local) for session replay -->
+  <!-- Load rrweb (local) for session replay -->
+  <!-- Using dynamic script loader to support both Vite (/libs/) and Filesystem (./public/libs/) without triggering Vite analysis on the file itself -->
+  <script>
+    (function () {
+      var script = document.createElement('script');
+      // If we are on http/https (likely Vite or served), use root path
+      if (window.location.protocol.startsWith('http')) {
+        script.src = "/libs/rrweb.min.js";
+      } else {
+        // If file://, use relative path to public folder
+        script.src = "./public/libs/rrweb.min.js";
+      }
+      script.async = false; // Block execution order if possible, but immediate check in client_sdk handles wait
+      document.head.appendChild(script);
+    })();
+  </script>
+
+  <script src="http://127.0.0.1:3535/api/client_sdk.js?v=4"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.Tracker) {
+        Tracker.init({
+          trackerUrl: 'http://127.0.0.1:3535',
+          project: 'Frontend App',
+          userId: 'guest_' + Math.floor(Math.random() * 1000)
+        });
+      } else {
+        console.error("Tracker SDK failed to load.");
+      }
+    });
+  </script>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
