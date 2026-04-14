@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import StateLoader from './StateLoader.vue';
 import StateEmpty from './StateEmpty.vue';
 import 'emoji-picker-element';
+import { getWsBase } from '@/plugins/wsUrl';
 
 const props = defineProps({
     projectId: { type: [String, Number], required: true }
@@ -117,7 +118,7 @@ const connectWebSocket = () => {
     if (ws) { ws.onclose = null; ws.close(); }
     const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const token = localStorage.getItem('access_token') || '';
-    const wsUrl = `${proto}//${window.location.host}/ws/projects/${props.projectId}/chat/?token=${token}&username=${currentUsername.value}`;
+    const wsUrl = `${getWsBase()}/ws/projects/${props.projectId}/chat/?token=${token}&username=${currentUsername.value}`;
     ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {

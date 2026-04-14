@@ -496,6 +496,7 @@ import { saveAs } from 'file-saver';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import { useI18n } from 'vue-i18n';
 import { usePermissions } from '@/composables/usePermissions';
+import { getWsBase } from '@/plugins/wsUrl';
 
 const { t } = useI18n();
 const { canViewDocs, isSuperuser: isSu, canCreateDoc, canEditDoc, canDeleteDoc } = usePermissions();
@@ -617,7 +618,7 @@ let typingTimer = null;
 const connectDocSocket = (docId) => {
   if (docSocket) docSocket.close();
   const token = localStorage.getItem('access_token') || localStorage.getItem('token') || '';
-  const wsBase = import.meta.env.VITE_WS_URL || `ws://${window.location.host}`;
+  const wsBase = getWsBase();
   docSocket = new WebSocket(`${wsBase}/ws/projects/${currentProjectId.value}/docs/${docId}/?token=${token}`);
 
   docSocket.onmessage = (e) => {

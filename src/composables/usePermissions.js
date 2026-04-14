@@ -2,22 +2,35 @@
  * usePermissions - central permissions composable.
  * Reads from localStorage and provides reactive helpers.
  */
-import { computed } from 'vue';
-
-const getPerms = () => {
-  try {
-    return JSON.parse(localStorage.getItem('user_permissions') || '{}');
-  } catch {
-    return {};
-  }
-};
+import { ref, computed, onMounted } from 'vue';
 
 export function usePermissions() {
-  const isSuperuser = computed(() => localStorage.getItem('isSuperuser') === 'true');
+  // Use refs so Vue can track them reactively
+  const _superuser = ref(false);
+  const _perms = ref({});
+
+  const refresh = () => {
+    _superuser.value =
+      localStorage.getItem('isSuperuser') === 'true' ||
+      localStorage.getItem('is_superuser') === 'true';
+    try {
+      _perms.value = JSON.parse(localStorage.getItem('user_permissions') || '{}');
+    } catch {
+      _perms.value = {};
+    }
+  };
+
+  // Read immediately (works in setup context)
+  refresh();
+
+  // Also refresh on mount in case called before localStorage is populated
+  onMounted(refresh);
+
+  const isSuperuser = computed(() => _superuser.value);
 
   const can = (perm) => {
-    if (isSuperuser.value) return true;
-    return !!getPerms()[perm];
+    if (_superuser.value) return true;
+    return !!_perms.value[perm];
   };
 
   // ── Screens ────────────────────────────────────────────────────
@@ -68,7 +81,7 @@ export function usePermissions() {
   const canManageEpics       = computed(() => can('can_manage_epics'));
 
   return {
-    isSuperuser, can,
+    isSuperuser, can, refresh,
     canViewDashboard, canViewIssues, canViewUsers, canViewSettings,
     canViewBacklog, canViewReports, canViewMembers, canViewChat,
     canViewDocs, canViewEvaluations, canViewPerformance,

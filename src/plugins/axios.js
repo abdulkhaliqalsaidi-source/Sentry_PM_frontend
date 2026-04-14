@@ -1,8 +1,10 @@
 import axios from 'axios';
 import router from '../router';
 
+const BASE_URL = import.meta.env.VITE_API_URL || '';
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/',
+  baseURL: BASE_URL || '/',
 });
 
 // Request Interceptor: Attach Access Token
@@ -38,7 +40,8 @@ axiosInstance.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const response = await axios.post('/api/token/refresh/', {
+          // Use full URL to ensure it hits the backend, not the frontend
+          const response = await axios.post(`${BASE_URL}/api/token/refresh/`, {
             refresh: refreshToken,
           });
 

@@ -464,6 +464,7 @@ import 'rrweb-player/dist/style.css';
 import StateLoader from '@/components/StateLoader.vue';
 import StateEmpty from '@/components/StateEmpty.vue';
 import AnimatedIcon from '@/components/AnimatedIcon.vue';
+import { getWsBase } from '@/plugins/wsUrl';
 
 export default {
     name: 'Dashboard',
@@ -825,7 +826,7 @@ export default {
             }
 
             const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${wsProtocol}//${window.location.host}/ws/notifications/${username}/`;
+            const wsUrl = `${getWsBase()}/ws/notifications/${username}/`;
 
             this.notificationWs = new WebSocket(wsUrl);
 
