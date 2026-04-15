@@ -444,10 +444,8 @@ export default {
     },
     async saveStatusOrder() {
       try {
-        const updates = this.statuses.map((s, i) =>
-          axios.patch(`/api/pm/statuses/${s.id}/`, { order: i + 1 })
-        );
-        await Promise.all(updates);
+        const items = this.statuses.map((s, i) => ({ id: s.id, order: i + 1 }));
+        await axios.post(`/api/pm/statuses/reorder/`, { items });
       } catch (e) { console.error(e); }
     },
     async fetchFields() {
