@@ -419,7 +419,7 @@ const fetchStats = async () => {
             if (cat) return cat;
             const name = (task.status_details?.name || '').toLowerCase();
             if (['done', 'completed', 'closed'].includes(name)) return 'DONE';
-            if (['in_progress', 'doing'].includes(name)) return 'IN_PROGRESS';
+            if (['in_progress', 'doing', 'in review', 'pending'].includes(name)) return 'IN_PROGRESS';
             return 'TO_DO';
         };
 

@@ -18,16 +18,34 @@
 
       <div class="bar-right">
         <div class="action-orbs">
-          <button @click="openAddModal" class="btn-create-field">
+          <button v-if="activeTab === 'fields'" @click="openAddModal" class="btn-create-field">
             <i class="fas fa-plus"></i>
             <span>{{ $t('customFields.addField') }}</span>
+          </button>
+          <button v-if="activeTab === 'statuses'" @click="openAddStatusModal" class="btn-create-field">
+            <i class="fas fa-plus"></i>
+            <span>{{ $t('customFields.addStatus') || 'Add Status' }}</span>
           </button>
         </div>
       </div>
     </header>
 
+    <!-- Tabs -->
+    <div class="config-tabs">
+      <button class="config-tab" :class="{ active: activeTab === 'fields' }" @click="activeTab = 'fields'">
+        <i class="fas fa-list-ul"></i>
+        <span>{{ $t('customFields.title') }}</span>
+      </button>
+      <button class="config-tab" :class="{ active: activeTab === 'statuses' }" @click="activeTab = 'statuses'">
+        <i class="fas fa-columns"></i>
+        <span>{{ $t('customFields.statuses') || 'Statuses' }}</span>
+      </button>
+    </div>
+
     <main class="main-stage overflow-y-auto custom-scrollbar">
       <div class="content-padding p-4 md:p-10">
+        <!-- ── Fields Tab ── -->
+        <template v-if="activeTab === 'fields'">
         <!-- Empty State: Pulsing Orb -->
         <div v-if="!loading && fields.length === 0" class="premium-empty-state">
           <div class="pulsing-orb-container mb-10">
@@ -109,8 +127,92 @@
                 <div class="h-10 bg-gray-100 dark:bg-gray-900 rounded w-full animate-pulse"></div>
             </div>
         </div>
+        </template>
+
+        <!-- ── Statuses Tab ── -->
+        <template v-if="activeTab === 'statuses'">
+          <div class="statuses-config max-w-3xl mx-auto">
+            <p class="statuses-hint">{{ $t('customFields.statusesHint') || 'Drag to reorder statuses' }}</p>
+            <draggable
+              v-model="statuses"
+              item-key="id"
+              handle=".drag-handle-status"
+              animation="200"
+              @end="saveStatusOrder"
+              class="statuses-list"
+            >
+              <template #item="{ element: st }">
+                <div class="status-row-config">
+                  <i class="fas fa-grip-vertical drag-handle-status"></i>
+                  <span class="status-color-dot" :style="{ background: st.color }"></span>
+                  <span class="status-name-config">{{ st.name }}</span>
+                  <span class="status-category-badge">{{ st.category }}</span>
+                  <div class="status-row-actions">
+                    <button @click="openEditStatusModal(st)" class="btn-elite-icon" :title="$t('common.edit')">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    <button @click="deleteStatus(st.id)" class="btn-elite-icon danger" :title="$t('common.delete')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </template>
+            </draggable>
+          </div>
+        </template>
       </div>
     </main>
+
+    <!-- Status Add/Edit Modal -->
+    <Teleport to="body">
+      <transition name="modal-fade">
+        <div v-if="showStatusModal" class="elite-modal-backdrop" @click.self="showStatusModal = false">
+          <div class="elite-modal-window medium glassmorphism animate-pop">
+            <div class="modal-header-elite primary">
+              <div class="modal-icon-orb"><i class="fas fa-columns"></i></div>
+              <h3>{{ editingStatus.id ? $t('common.edit') : ($t('customFields.addStatus') || 'Add Status') }}</h3>
+            </div>
+            <div class="modal-body-elite scrollable custom-scrollbar flex flex-col gap-10">
+              <div class="elite-input-group">
+                <label>{{ $t('customFields.name') }} <span class="required-star">*</span></label>
+                <div class="elite-input-wrapper">
+                  <i class="fas fa-tag elite-input-icon"></i>
+                  <input v-model="editingStatus.name" type="text" class="elite-input-field has-icon" placeholder="e.g. In Review" />
+                </div>
+              </div>
+              <div class="elite-input-group">
+                <label>{{ $t('customFields.type') || 'Category' }}</label>
+                <div class="elite-input-wrapper">
+                  <i class="fas fa-layer-group elite-input-icon"></i>
+                  <select v-model="editingStatus.category" class="elite-select-field has-icon">
+                    <option value="TO_DO">To Do</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_REVIEW">In Review</option>
+                    <option value="DONE">Done</option>
+                  </select>
+                </div>
+              </div>
+              <div class="elite-input-group">
+                <label>{{ $t('common.color') || 'Color' }}</label>
+                <div class="elite-input-wrapper" style="align-items:center;gap:12px">
+                  <input type="color" v-model="editingStatus.color" style="width:40px;height:40px;border:none;background:none;cursor:pointer;padding:0" />
+                  <span style="font-size:0.85rem;color:var(--text-muted)">{{ editingStatus.color }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer-elite h-[100px]">
+              <button @click="showStatusModal = false" class="btn-elite-glass">{{ $t('common.cancel') }}</button>
+              <button @click="saveStatus" class="btn-elite-solid primary" :disabled="loadingSave">
+                <span v-if="loadingSave" class="spinner-tiny"></span>
+                <i v-else class="fas fa-check-circle mr-2"></i>
+                {{ loadingSave ? '...' : $t('common.save') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
 
     <!-- Edit Modal -->
     <Teleport to="body">
@@ -262,40 +364,91 @@
 <script>
 import axios from '@/plugins/axios';
 import AnimatedIcon from '@/components/AnimatedIcon.vue';
+import draggable from 'vuedraggable';
 
 export default {
   name: 'CustomFieldsConfigView',
   props: ['projectId'],
-  components: { AnimatedIcon },
+  components: { AnimatedIcon, draggable },
   data() {
     return {
       projectDetails: null,
       fields: [],
+      statuses: [],
       loading: true,
       loadingSave: false,
+      activeTab: 'fields',
       showAddModal: false,
       showEditModal: false,
+      showStatusModal: false,
+      editingStatus: { id: null, name: '', category: 'TO_DO', color: '#64748B' },
       editField: { id: null, name: '', field_type: 'TEXT', required: false, optionsStr: '' },
-      newField: {
-        name: '',
-        field_type: 'TEXT',
-        required: false,
-        optionsStr: ''
-      }
+      newField: { name: '', field_type: 'TEXT', required: false, optionsStr: '' }
     }
   },
   mounted() {
     this.fetchProject();
     this.fetchFields();
+    this.fetchStatuses();
   },
   methods: {
     async fetchProject() {
        try {
          const res = await axios.get(`/api/pm/projects/${this.projectId}/`);
          this.projectDetails = res.data;
-       } catch (e) {
-         console.error(e);
-       }
+       } catch (e) { console.error(e); }
+    },
+    async fetchStatuses() {
+      try {
+        const res = await axios.get(`/api/pm/statuses/?project=${this.projectId}`);
+        this.statuses = res.data;
+      } catch (e) { console.error(e); }
+    },
+    openAddStatusModal() {
+      this.editingStatus = { id: null, name: '', category: 'TO_DO', color: '#64748B' };
+      this.showStatusModal = true;
+    },
+    openEditStatusModal(st) {
+      this.editingStatus = { ...st };
+      this.showStatusModal = true;
+    },
+    async saveStatus() {
+      if (!this.editingStatus.name) return;
+      this.loadingSave = true;
+      try {
+        if (this.editingStatus.id) {
+          await axios.patch(`/api/pm/statuses/${this.editingStatus.id}/`, {
+            name: this.editingStatus.name,
+            category: this.editingStatus.category,
+            color: this.editingStatus.color,
+          });
+        } else {
+          await axios.post(`/api/pm/statuses/`, {
+            project: this.projectId,
+            name: this.editingStatus.name,
+            category: this.editingStatus.category,
+            color: this.editingStatus.color,
+            order: this.statuses.length + 1,
+          });
+        }
+        this.showStatusModal = false;
+        await this.fetchStatuses();
+      } catch (e) { console.error(e); } finally { this.loadingSave = false; }
+    },
+    async deleteStatus(id) {
+      if (!confirm(this.$t('common.delete_confirm') || 'Delete this status?')) return;
+      try {
+        await axios.delete(`/api/pm/statuses/${id}/`);
+        await this.fetchStatuses();
+      } catch (e) { console.error(e); }
+    },
+    async saveStatusOrder() {
+      try {
+        const updates = this.statuses.map((s, i) =>
+          axios.patch(`/api/pm/statuses/${s.id}/`, { order: i + 1 })
+        );
+        await Promise.all(updates);
+      } catch (e) { console.error(e); }
     },
     async fetchFields() {
       this.loading = true;
@@ -560,5 +713,56 @@ export default {
   background: var(--primary);
   box-shadow: 0 0 10px var(--primary-glow);
 }
+
+/* Config Tabs */
+.config-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-card);
+}
+.config-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+.config-tab:hover { color: var(--primary); }
+.config-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Statuses Config */
+.statuses-config { padding: 8px 0; }
+.statuses-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; }
+.statuses-list { display: flex; flex-direction: column; gap: 8px; }
+.status-row-config {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: box-shadow 0.2s;
+}
+.status-row-config:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.drag-handle-status { color: var(--text-muted); cursor: grab; font-size: 1rem; }
+.drag-handle-status:active { cursor: grabbing; }
+.status-color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+.status-name-config { font-weight: 700; font-size: 0.95rem; color: var(--text-main); flex: 1; }
+.status-category-badge {
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--primary); background: var(--primary-bg); padding: 3px 10px; border-radius: 20px;
+}
+.status-row-actions { display: flex; gap: 6px; }
 
 </style>

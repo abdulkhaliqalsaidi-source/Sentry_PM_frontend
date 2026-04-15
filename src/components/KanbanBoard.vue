@@ -103,7 +103,7 @@ const visibleColumns = computed(() => {
     const isApproved = col.category === 'DONE' && (col.title.toLowerCase().includes('approved') || col.title.includes('تمت المراجعة'));
     if (isApproved) return false;
     
-    return col.category === 'IN_PROGRESS' || col.category === 'DONE' || isPending(col);
+    return col.category === 'IN_PROGRESS' || col.category === 'DONE' || col.category === 'PENDING' || col.category === 'IN_REVIEW' || isPending(col);
   });
 
   return filtered.sort((a, b) => {
@@ -215,8 +215,12 @@ const fetchTasks = async (silent = false) => {
     allColumns.value.forEach(col => { grouped[col.id] = []; });
     
     data.forEach(task => {
-      if (grouped[task.status]) {
-        grouped[task.status].push(task);
+      const statusKey = task.status || task.status_details?.id;
+      if (statusKey && grouped[statusKey]) {
+        grouped[statusKey].push(task);
+      } else if (allColumns.value.length > 0) {
+        // fallback to first column
+        grouped[allColumns.value[0].id].push(task);
       }
     });
     groupedTasks.value = grouped;
@@ -732,13 +736,13 @@ const currentAssigningTask = computed(() => {
             <p>{{ $t('kanban.no_sprint_desc') }}</p>
             <button class="btn-primary" @click="router.push(`/projects/${projectId}/backlog`)">{{ $t('kanban.go_to_backlog') }}</button>
         </div>
-        <div v-else v-for="col in visibleColumns" :key="col.id" class="kanban-column-premium" :class="{ 'wip-limit-reached': col.category === 'IN_PROGRESS' && groupedTasks[col.id].length > 5 }">
+        <div v-else v-for="col in visibleColumns" :key="col.id" class="kanban-column-premium" :class="{ 'wip-limit-reached': ['IN_PROGRESS','PENDING','IN_REVIEW'].includes(col.category) && groupedTasks[col.id].length > 5 }">
         <div class="column-header-v" :style="{ '--col-color': col.color }">
             <div class="h-main">
               <div class="status-indicator"></div>
               <h3 class="col-title">{{ col.title }}</h3>
             </div>
-            <div class="count-pod" :class="{ 'urgent': col.category === 'IN_PROGRESS' && groupedTasks[col.id].length > 5 }">
+            <div class="count-pod" :class="{ 'urgent': ['IN_PROGRESS','PENDING','IN_REVIEW'].includes(col.category) && groupedTasks[col.id].length > 5 }">
                 {{ groupedTasks[col.id].length }}
             </div>
         </div>

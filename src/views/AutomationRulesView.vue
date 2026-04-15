@@ -290,6 +290,8 @@
                       <select v-else-if="newRule.condition_field === 'status.category'" v-model="newRule.condition_value" class="step-select">
                         <option value="TO_DO">TO_DO</option>
                         <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="IN_REVIEW">IN_REVIEW</option>
                         <option value="DONE">DONE</option>
                       </select>
                       <input v-else v-model="newRule.condition_value" type="text" class="step-input" :placeholder="conditionValuePlaceholder" />

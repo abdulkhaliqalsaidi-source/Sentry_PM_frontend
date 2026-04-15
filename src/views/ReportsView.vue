@@ -169,7 +169,7 @@ const displaySprintTasks = computed(() => {
 const summaryStats = computed(() => {
     const t_ = filteredTasks.value;
     const done       = t_.filter(t => isDone(t)).length;
-    const inProgress = t_.filter(t => getStatusCategory(t.status) === 'IN_PROGRESS').length;
+    const inProgress = t_.filter(t => ['IN_PROGRESS', 'PENDING', 'IN_REVIEW'].includes(getStatusCategory(t.status))).length;
     const todo       = t_.filter(t => getStatusCategory(t.status) === 'TO_DO').length;
     const totalPts   = t_.reduce((s, t) => s + (parseFloat(t.story_points) || 0), 0);
     const donePts    = t_.filter(t => isDone(t)).reduce((s, t) => s + (parseFloat(t.story_points) || 0), 0);
@@ -214,7 +214,7 @@ const userBreakdown = computed(() => {
         map[key].total++;
         const cat = getStatusCategory(t.status);
         if (cat === 'DONE') map[key].done++;
-        else if (cat === 'IN_PROGRESS') map[key].inProgress++;
+        else if (['IN_PROGRESS', 'PENDING', 'IN_REVIEW'].includes(cat)) map[key].inProgress++;
         else map[key].todo++;
         map[key].points += parseFloat(t.story_points) || 0;
     });
@@ -225,7 +225,7 @@ const epicBreakdown = computed(() => {
     return epics.value.map(epic => {
         const epicTasks = filteredTasks.value.filter(t => t.epic === epic.id);
         const done     = epicTasks.filter(t => isDone(t)).length;
-        const inProg   = epicTasks.filter(t => getStatusCategory(t.status) === 'IN_PROGRESS').length;
+        const inProg   = epicTasks.filter(t => ['IN_PROGRESS', 'PENDING', 'IN_REVIEW'].includes(getStatusCategory(t.status))).length;
         const todo     = epicTasks.filter(t => getStatusCategory(t.status) === 'TO_DO').length;
         const totalPts = epicTasks.reduce((s, t) => s + (parseFloat(t.story_points) || 0), 0);
         const donePts  = epicTasks.filter(t => isDone(t)).reduce((s, t) => s + (parseFloat(t.story_points) || 0), 0);
@@ -352,12 +352,12 @@ const workloadData = computed(() => {
         labels.push(u.username);
         const userTasks = activeTasks.filter(t => t.assigned_to === u.id);
         todoData.push(userTasks.filter(t => getStatusCategory(t.status) === 'TO_DO').length);
-        inProgressData.push(userTasks.filter(t => getStatusCategory(t.status) === 'IN_PROGRESS').length);
+        inProgressData.push(userTasks.filter(t => ['IN_PROGRESS', 'PENDING', 'IN_REVIEW'].includes(getStatusCategory(t.status))).length);
     });
     labels.push(t('kanban.unassigned'));
     const unassigned = activeTasks.filter(t => !t.assigned_to);
     todoData.push(unassigned.filter(t => getStatusCategory(t.status) === 'TO_DO').length);
-    inProgressData.push(unassigned.filter(t => getStatusCategory(t.status) === 'IN_PROGRESS').length);
+    inProgressData.push(unassigned.filter(t => ['IN_PROGRESS', 'PENDING', 'IN_REVIEW'].includes(getStatusCategory(t.status))).length);
     return {
         labels,
         datasets: [
