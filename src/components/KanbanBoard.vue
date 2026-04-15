@@ -491,6 +491,17 @@ const createTask = async () => {
     } else if (allColumns.value.length > 0) {
         defaultStatusId = allColumns.value[0].id;
     }
+
+    // If still null, fetch statuses now
+    if (!defaultStatusId) {
+        try {
+            const res = await axios.get('/api/pm/statuses/', { params: { project: props.projectId } });
+            if (res.data.length > 0) {
+                const todo = res.data.find(s => s.category === 'TO_DO') || res.data[0];
+                defaultStatusId = todo.id;
+            }
+        } catch (e) { console.error('Could not fetch statuses', e); }
+    }
     
     loadingSave.value = true;
     try {
