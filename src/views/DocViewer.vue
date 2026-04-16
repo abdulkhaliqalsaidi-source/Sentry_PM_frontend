@@ -489,8 +489,6 @@ import ProjectApiViewer from '../components/ProjectApiViewer.vue';
 import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 import 'github-markdown-css/github-markdown.css';
-import mermaid from 'mermaid';
-import html2pdf from 'html2pdf.js';
 import { asBlob } from 'html-docx-js-typescript';
 import { saveAs } from 'file-saver';
 import ConfirmModal from '../components/ConfirmModal.vue';
@@ -501,17 +499,26 @@ import { getWsBase } from '@/plugins/wsUrl';
 const { t } = useI18n();
 const { canViewDocs, isSuperuser: isSu, canCreateDoc, canEditDoc, canDeleteDoc } = usePermissions();
 
-mermaid.initialize({
-  startOnLoad: false,
-  theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'neutral',
-  securityLevel: 'loose',
-  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
-  themeVariables: {
-    darkMode: document.documentElement.getAttribute('data-theme') === 'dark',
-    background: 'transparent',
-    mainBkg: 'transparent',
+// Lazy-load mermaid on first use
+let _mermaid = null;
+async function getMermaid() {
+  if (!_mermaid) {
+    const mod = await import('mermaid');
+    _mermaid = mod.default;
+    _mermaid.initialize({
+      startOnLoad: false,
+      theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'neutral',
+      securityLevel: 'loose',
+      flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+      themeVariables: {
+        darkMode: document.documentElement.getAttribute('data-theme') === 'dark',
+        background: 'transparent',
+        mainBkg: 'transparent',
+      }
+    });
   }
-});
+  return _mermaid;
+}
 
 const md = new MarkdownIt({ 
   html: true, 
@@ -759,6 +766,7 @@ const formatDate = (dateStr) => {
 const initMermaid = async () => {
     try {
         await nextTick();
+        const mermaid = await getMermaid();
         await mermaid.run({
             querySelector: '.mermaid'
         });
@@ -972,6 +980,7 @@ const exportToPDF = async () => {
   };
 
   try {
+    const html2pdf = (await import('html2pdf.js')).default;
     await html2pdf().set(opt).from(container).save();
     toast('تم تصدير PDF بنجاح', 'success');
   } catch (err) {
@@ -1151,7 +1160,7 @@ const exportFullProjectToPDF = async () => {
       pagebreak: { mode: ['css', 'legacy'] },
     };
 
-    await html2pdf().set(opt).from(tempContainer).save();
+    await (await import('html2pdf.js')).default().set(opt).from(tempContainer).save();
     toast('تم تصدير PDF المشروع بنجاح', 'success');
     document.body.removeChild(tempContainer);
 

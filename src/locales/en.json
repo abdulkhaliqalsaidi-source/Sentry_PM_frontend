@@ -103,7 +103,9 @@
         "automation": "Automation",
         "bottleneck": "Bottleneck",
         "custom_fields": "Custom Fields",
-        "plugins": "Plugins"
+        "plugins": "Plugins",
+        "collapse": "Collapse",
+        "version": "Version"
     },
     "general": {
         "copied_to_clipboard": "Copied to clipboard!",
@@ -251,7 +253,8 @@
         "view_board": "View Board",
         "total_tasks": "Total Tasks",
         "done": "Completed",
-        "in_progress": "In Progress"
+        "in_progress": "In Progress",
+        "no_projects": "No projects found"
     },
     "kanban": {
         "loading": "Loading Kanban Board...",
@@ -606,6 +609,7 @@
             "this_device": "This Device (Active Now)"
         },
         "primary_color": "Primary Color",
+        "font_family": "Font Family",
         "colors": {
             "omnia": "Omnia Default",
             "indigo": "Indigo",
@@ -884,6 +888,7 @@
         "communication": "Communication",
         "communication_desc": "Quality of communication and collaboration with the team.",
         "code_quality": "Code Quality",
+        "code_quality_desc": "Code review scores, standards compliance, and best practices.",
         "bug_quality": "Bug and code quality metrics"
     },
     "api_viewer": {

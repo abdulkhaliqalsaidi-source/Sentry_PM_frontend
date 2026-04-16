@@ -105,7 +105,9 @@
         "automation": "الأتمتة",
         "bottleneck": "عنق الزجاجة",
         "custom_fields": "الحقول المخصصة",
-        "plugins": "الإضافات"
+        "plugins": "الإضافات",
+        "collapse": "طي القائمة",
+        "version": "إصدار"
     },
     "general": {
         "copied_to_clipboard": "تم النسخ إلى الحافظة!",
@@ -433,6 +435,7 @@
         "refresh": "تحديث القائمة",
         "total_users": "إجمالي المستخدمين",
         "active_projects": "المشاريع النشطة",
+        "total_projects": "إجمالي المشاريع",
         "total_groups": "إجمالي المجموعات",
         "linked_projects": "المشاريع المعينة",
         "no_users": "لم يتم العثور على مستخدمين",
@@ -890,7 +893,8 @@
         "communication": "التواصل",
         "communication_desc": "جودة التواصل والتعاون مع الفريق.",
         "code_quality": "جودة الكود",
-        "code_quality_desc": "درجات مراجعة الكود والالتزام بالمعايير وأفضل الممارسات."
+        "code_quality_desc": "درجات مراجعة الكود والالتزام بالمعايير وأفضل الممارسات.",
+        "bug_quality": "مقاييس جودة الكود والأخطاء"
     },
     "api_viewer": {
         "title": "سواجر UI",

@@ -88,29 +88,20 @@ const visibleColumns = computed(() => {
   const isPending = (c) => c.category === 'PENDING' || c.title.toLowerCase().includes('pending') || c.title.includes('معلق');
 
   if (showAllColumns.value) {
-    const cols = [...allColumns.value];
-    return cols.sort((a, b) => {
-      // For Admins: TO_DO category first
-      if (a.category === 'TO_DO' && b.category !== 'TO_DO') return -1;
-      if (a.category !== 'TO_DO' && b.category === 'TO_DO') return 1;
-      return 0;
-    });
+    // Respect the order from the API (already sorted by 'order' field)
+    return [...allColumns.value];
   }
 
-  // For Members: Show IN_PROGRESS + DONE columns + Pending, with Pending first
-  // Exclusion: Hide "Approved" (تمت المراجعة)
+  // For Members: Show TO_DO + IN_PROGRESS + DONE columns only
   const filtered = allColumns.value.filter(col => {
     const isApproved = col.category === 'DONE' && (col.title.toLowerCase().includes('approved') || col.title.includes('تمت المراجعة'));
     if (isApproved) return false;
-    
-    return col.category === 'IN_PROGRESS' || col.category === 'DONE' || col.category === 'PENDING' || col.category === 'IN_REVIEW' || isPending(col);
+    return col.category === 'TO_DO' || col.category === 'IN_PROGRESS' || col.category === 'DONE';
   });
 
-  return filtered.sort((a, b) => {
-    if (isPending(a) && !isPending(b)) return -1;
-    if (!isPending(a) && isPending(b)) return 1;
-    return 0;
-  });
+  console.log('[visibleColumns] allColumns:', allColumns.value.map(c => c.category), '| filtered:', filtered.map(c => c.category));
+  // Respect the order from the API
+  return filtered;
 });
 
 const userRole = ref('VIEWER');
@@ -736,13 +727,13 @@ const currentAssigningTask = computed(() => {
             <p>{{ $t('kanban.no_sprint_desc') }}</p>
             <button class="btn-primary" @click="router.push(`/projects/${projectId}/backlog`)">{{ $t('kanban.go_to_backlog') }}</button>
         </div>
-        <div v-else v-for="col in visibleColumns" :key="col.id" class="kanban-column-premium" :class="{ 'wip-limit-reached': ['IN_PROGRESS','PENDING','IN_REVIEW'].includes(col.category) && groupedTasks[col.id].length > 5 }">
+        <div v-else v-for="col in visibleColumns" :key="col.id" class="kanban-column-premium" :class="{ 'wip-limit-reached': col.category === 'IN_PROGRESS' && groupedTasks[col.id].length > 5 }">
         <div class="column-header-v" :style="{ '--col-color': col.color }">
             <div class="h-main">
               <div class="status-indicator"></div>
               <h3 class="col-title">{{ col.title }}</h3>
             </div>
-            <div class="count-pod" :class="{ 'urgent': ['IN_PROGRESS','PENDING','IN_REVIEW'].includes(col.category) && groupedTasks[col.id].length > 5 }">
+            <div class="count-pod" :class="{ 'urgent': col.category === 'IN_PROGRESS' && groupedTasks[col.id].length > 5 }">
                 {{ groupedTasks[col.id].length }}
             </div>
         </div>

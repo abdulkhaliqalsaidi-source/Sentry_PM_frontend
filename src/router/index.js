@@ -107,13 +107,15 @@ const routes = [
                 path: 'projects/:projectId/docs/add',
                 name: 'AddProjectDoc',
                 component: () => import('../views/AdminDocEditor.vue'),
-                props: true
+                props: true,
+                meta: { permission: 'docs' }
             },
             {
                 path: 'projects/:projectId/docs/:docId/edit',
                 name: 'EditProjectDoc',
                 component: () => import('../views/AdminDocEditor.vue'),
-                props: true
+                props: true,
+                meta: { permission: 'docs' }
             },
             {
                 path: 'settings',
@@ -125,13 +127,13 @@ const routes = [
                 path: 'users',
                 name: 'Users',
                 component: UsersView,
-                meta: { permission: 'users' }
+                meta: { permission: 'users', requiresAuth: true }
             },
             {
                 path: 'permissions',
                 name: 'Permissions',
                 component: PermissionsView,
-                meta: { permission: 'manage_permissions' }
+                meta: { permission: 'manage_permissions', requiresAuth: true }
             },
             {
                 path: 'evaluations',

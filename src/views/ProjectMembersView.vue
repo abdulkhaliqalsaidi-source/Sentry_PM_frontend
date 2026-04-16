@@ -182,7 +182,7 @@ const { t } = useI18n();
 const { canManageMembers, canViewMembers, isSuperuser } = usePermissions();
 
 const API_BASE = '/api/pm';
-const AUTH_API = '/api/admin';
+const AUTH_API = '/api/pm';
 
 const props = defineProps(['projectId']);
 const route = useRoute();
@@ -224,7 +224,7 @@ const fetchProjectRoles = async () => {
 
 const fetchAllUsers = async () => {
     try {
-        const res = await axios.get(`${AUTH_API}/users/`);
+        const res = await axios.get(`${AUTH_API}/all-users/`);
         availableUsers.value = res.data;
     } catch (e) { console.error(e); }
 };

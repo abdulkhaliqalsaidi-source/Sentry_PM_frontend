@@ -348,7 +348,7 @@ export default {
       },
       userToDelete: null,
       message: null,
-      canManageUsers: perms.canViewUsers.value || perms.isSuperuser.value,
+      canManageUsers: perms.isSuperuser.value,
     };
   },
   computed: {
@@ -375,7 +375,9 @@ export default {
     async fetchUsers() {
       this.loading = true;
       try {
-        const response = await axios.get('/api/admin/users/');
+        const isSuperuser = localStorage.getItem('is_superuser') === 'true';
+        const url = isSuperuser ? '/api/admin/users/' : '/api/pm/all-users/';
+        const response = await axios.get(url);
         this.users = response.data;
       } catch { this.showMessage(this.$t('users.messages.fetch_error'), 'error'); } finally { this.loading = false; }
     },
@@ -383,6 +385,8 @@ export default {
       try { const response = await axios.get('/api/public/projects/'); this.allProjects = response.data; } catch (e) { console.error(e); }
     },
     async fetchGroups() {
+      const isSuperuser = localStorage.getItem('is_superuser') === 'true';
+      if (!isSuperuser) return;
       try { const response = await axios.get('/api/admin/groups/'); this.allGroups = response.data; } catch (e) { console.error(e); }
     },
     openEditModal(user) { this.editingUser = { ...user }; this.showEditModal = true; },

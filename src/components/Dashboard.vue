@@ -74,7 +74,7 @@
                         </div>
                         <span class="nav-text">{{ $t('common.users') }}</span>
                     </router-link>
-                    <router-link to="/permissions" class="nav-item parent-hover" active-class="active" v-if="permissions.manage_permissions || permissions.users" :title="isSidebarCollapsed ? $t('common.permissions') : ''">
+                    <router-link to="/permissions" class="nav-item parent-hover" active-class="active" v-if="permissions.manage_permissions" :title="isSidebarCollapsed ? $t('common.permissions') : ''">
                         <div class="nav-icon-wrapper">
                             <AnimatedIcon name="permissions" />
                         </div>
@@ -504,22 +504,22 @@ export default {
             showUserMenu: false, // Control user menu visibility
             isSidebarCollapsed: false,
             permissions: {
-                dashboard: true,
-                issues: true,
+                dashboard: false,
+                issues: false,
                 users: false,
-                settings: true,
+                settings: false,
                 can_delete_issues: false,
                 can_create_project: false,
                 can_create_task: false,
                 can_view_user_projects: false,
-                backlog: true,
-                reports: true,
-                members: true,
-                chat: true,
-                docs: true,
+                backlog: false,
+                reports: false,
+                members: false,
+                chat: false,
+                docs: false,
                 evaluations: false,
-                performance: true,
-                notifications: true,
+                performance: false,
+                notifications: false,
                 manage_permissions: false
             },
             allProjects: [],

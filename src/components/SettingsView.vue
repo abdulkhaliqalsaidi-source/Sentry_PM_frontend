@@ -353,7 +353,7 @@
                 </div>
 
                 <!-- Data Usage Card -->
-                <div class="premium-card maintenance-card-premium">
+                <div class="premium-card maintenance-card-premium" v-if="isSuperuser">
                   <div class="card-title-row">
                     <span class="icon-circle tertiary"><i class="fa-solid fa-chart-pie"></i></span>
                     <h3>{{ $t('settings.maintenance.data_usage') }}</h3>
@@ -653,6 +653,7 @@ export default {
       await Promise.all([this.fetchProfile(), this.fetchSystemUsage()]);
     },
     async fetchSystemUsage() {
+      if (localStorage.getItem('is_superuser') !== 'true') return;
       try {
         const response = await axios.get('/api/system/usage/');
         if (response.data.status === 'success') {

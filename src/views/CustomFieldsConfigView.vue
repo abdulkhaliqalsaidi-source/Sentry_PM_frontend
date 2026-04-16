@@ -446,6 +446,8 @@ export default {
       try {
         const items = this.statuses.map((s, i) => ({ id: s.id, order: i + 1 }));
         await axios.post(`/api/pm/statuses/reorder/`, { items });
+        // Refetch to confirm new order from server
+        await this.fetchStatuses();
       } catch (e) { console.error(e); }
     },
     async fetchFields() {

@@ -1,6 +1,4 @@
 <script>
-import rrwebPlayer from 'rrweb-player';
-import 'rrweb-player/dist/style.css';
 import StateLoader from '@/components/StateLoader.vue';
 import StateEmpty from '@/components/StateEmpty.vue';
 import axios from '@/plugins/axios';
