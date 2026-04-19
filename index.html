@@ -28,19 +28,25 @@
     })();
   </script>
 
-  <script src="http://127.0.0.1:3535/api/client_sdk.js?v=4"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.Tracker) {
-        Tracker.init({
-          trackerUrl: 'http://127.0.0.1:3535',
-          project: 'Frontend App',
-          userId: 'guest_' + Math.floor(Math.random() * 1000)
+    (function() {
+      var trackerUrl = window.TRACKER_URL || '';
+      if (!trackerUrl) return;
+      var sdk = document.createElement('script');
+      sdk.src = trackerUrl + '/api/client_sdk.js?v=4';
+      sdk.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
+          if (window.Tracker) {
+            Tracker.init({
+              trackerUrl: trackerUrl,
+              project: 'Frontend App',
+              userId: 'guest_' + Math.floor(Math.random() * 1000)
+            });
+          }
         });
-      } else {
-        console.error("Tracker SDK failed to load.");
-      }
-    });
+      };
+      document.head.appendChild(sdk);
+    })();
   </script>
   <div id="app"></div>
   <script type="module" src="/src/main.js"></script>
