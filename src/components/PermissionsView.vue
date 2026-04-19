@@ -23,7 +23,7 @@
     </header>
 
     <main class="main-stage overflow-y-auto custom-scrollbar">
-      <div class="content-padding p-4 md:p-10">
+      <div class="content-padding  p-4 md:p-10 ">
 
         <!-- LIST VIEW -->
         <template v-if="currentView === 'list'">

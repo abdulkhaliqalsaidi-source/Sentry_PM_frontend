@@ -1,5 +1,12 @@
 <template>
     <div class="dashboard-wrapper">
+        <!-- Sidebar Toggle Button (outside sidebar to avoid overflow:hidden) -->
+        <button class="btn-sidebar-toggle-brand parent-hover" @click="toggleSidebar" :title="isSidebarCollapsed ? $t('common.expand') : $t('common.collapse')" :style="{ 'inset-inline-start': isSidebarCollapsed ? '62px' : '244px' }">
+            <div class="toggle-inner">
+                <AnimatedIcon :name="toggleIcon" size="sm" />
+            </div>
+        </button>
+
         <!-- Sidebar -->
         <aside class="sidebar" :class="{ 'collapsed': isSidebarCollapsed, 'project-context': activeProjectId }">
             <div class="brand">
@@ -28,16 +35,9 @@
                     </div>
                 </div>
 
-                <button class="btn-sidebar-toggle-brand parent-hover" @click="toggleSidebar" :title="isSidebarCollapsed ? $t('common.expand') : $t('common.collapse')">
-                    <div class="toggle-outer">
-                        <div class="toggle-inner">
-                            <AnimatedIcon :name="toggleIcon" size="sm" />
-                        </div>
-                    </div>
-                </button>
             </div>
 
-            <!-- Resizable Handle (Jira Style) - Only the line remains for visual feedback -->
+            <!-- Resizable Handle -->
             <div class="sidebar-resizable-handle" style="pointer-events: none;">
                 <div class="handle-line"></div>
             </div>
@@ -683,11 +683,11 @@ export default {
             return key ? this.$t(key) : this.userRole;
         },
         toggleIcon() {
-            const isRtl = document.documentElement.dir === 'rtl';
+            const isRtl = this.$i18n.locale === 'ar';
             if (this.isSidebarCollapsed) {
-                return 'chevron-right';
+                return isRtl ? 'chevron-left' : 'chevron-right';
             }
-            return 'chevron-left';
+            return isRtl ? 'chevron-right' : 'chevron-left';
         }
     },
     watch: {
@@ -1429,6 +1429,7 @@ export default {
     flex-shrink: 0;
     box-shadow: var(--glass-shadow);
     overflow: hidden;
+    clip-path: none;
 }
 
 .sidebar.collapsed {
@@ -1508,30 +1509,37 @@ export default {
 
 /* Toggle Arrow Button */
 .btn-sidebar-toggle-brand {
-    position: absolute;
-    inset-inline-end: -16px;
-    top: 100px;
-    width: 32px;
-    height: 32px;
+    position: fixed;
+    top: 50vh;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: var(--bg-surface);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 20;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, box-shadow 0.2s, color 0.2s;
+    z-index: 1100;
+    transition: background 0.2s, box-shadow 0.2s, color 0.2s, inset-inline-start 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .btn-sidebar-toggle-brand:hover {
-    background: linear-gradient(135deg, var(--primary), var(--primary-gradient-end, var(--primary-hover)));
+    background: var(--primary);
     color: white;
     border-color: transparent;
-    transform: scale(1.15);
-    box-shadow: 0 6px 16px var(--primary-bg);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.btn-sidebar-toggle-brand .toggle-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
 .btn-sidebar-toggle-brand .toggle-inner {

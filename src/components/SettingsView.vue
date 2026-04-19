@@ -596,6 +596,7 @@ export default {
     tabs() {
       return this.tabsList.filter(tab => {
         if (tab.id === 'maintenance') return this.isSuperuser;
+        if (tab.id === 'preferences') return this.isSuperuser;
         return true;
       });
     },
