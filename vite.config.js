@@ -1,9 +1,18 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import { writeFileSync } from 'fs'
+import { resolve } from 'path'
+
+const copyRedirects = {
+  name: 'copy-redirects',
+  closeBundle() {
+    writeFileSync(resolve(__dirname, 'dist/_redirects'), '/* /index.html 200\n')
+  }
+}
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), copyRedirects],
   publicDir: 'public',
   resolve: {
     alias: {
