@@ -173,7 +173,7 @@ const formatDateShort = (dateString) => {
 .meta-pill.date i { font-size: 0.7rem; color: var(--primary); }
 
 .badges-row-v { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.epic-tag { font-size: 0.65rem; font-weight: 950; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: color-mix(in srgb, var(--e-color), transparent 90%); color: var(--e-color); border: 1px solid color-mix(in srgb, var(--e-color), transparent 80%); }
+.epic-tag { font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: color-mix(in srgb, var(--e-color), transparent 90%); color: var(--e-color); border: 1px solid color-mix(in srgb, var(--e-color), transparent 80%); }
 .labels-h-list { display: flex; gap: 5px; }
 .label-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--l-color); box-shadow: 0 0 6px var(--l-color); }
 
@@ -190,12 +190,12 @@ const formatDateShort = (dateString) => {
 .ind-item.blocked { color: var(--ds-red); }
 
 .f-right { display: flex; align-items: center; gap: 10px; }
-.sp-pill { padding: 2px 8px; border-radius: 100px; background: var(--primary-bg); color: var(--primary); font-size: 0.7rem; font-weight: 950; font-family: monospace; border: 1px solid var(--primary-glow); }
+.sp-pill { padding: 2px 8px; border-radius: 100px; background: var(--primary-bg); color: var(--primary); font-size: 0.7rem; font-weight: 900; font-family: monospace; border: 1px solid var(--primary-glow); }
 
 .assignees-orbit { display: flex; flex-direction: row-reverse; }
 .member-av { 
   width: 28px; height: 28px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--indigo-800));
-  color: white; font-size: 0.75rem; font-weight: 950; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.75rem; font-weight: 900; display: flex; align-items: center; justify-content: center;
   border: 2px solid var(--bg-card); margin-left: -10px; transition: transform 0.2s;
 }
 .member-av:hover { transform: translateY(-5px) scale(1.1); z-index: 5; }

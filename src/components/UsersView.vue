@@ -95,7 +95,7 @@
         </div>
         
         <transition-group name="stagger-user" tag="div" class="directory-items">
-          <div v-for="(user, idx) in filteredUsers" :key="user.id" 
+          <div v-for="(user, idx) in paginatedUsers" :key="user.id" 
                class="user-tile-hyper glass-stroke"
                :style="{ '--idx': idx }">
             <div class="tile-aura"></div>
@@ -131,6 +131,14 @@
             </div>
           </div>
         </transition-group>
+        <ElitePagination 
+          v-if="!loading && filteredUsers.length > 0"
+          :totalItems="filteredUsers.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+          style="margin-top: 20px"
+        />
       </div>
     </div>
 
@@ -320,9 +328,13 @@
 <script>
 import axios from '@/plugins/axios';
 import { usePermissions } from '@/composables/usePermissions';
+import ElitePagination from '@/components/ElitePagination.vue';
 
 export default {
   name: 'UsersView',
+  components: {
+    ElitePagination
+  },
   data() {
     const perms = usePermissions();
     return {
@@ -334,6 +346,8 @@ export default {
       allProjects: [],
       allGroups: [],
       searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
       showEditModal: false,
       showCreateModal: false,
       showDeleteConfirm: false,
@@ -353,16 +367,28 @@ export default {
   },
   computed: {
     filteredUsers() {
-      if (!this.searchQuery) return this.users;
-      const q = this.searchQuery.toLowerCase();
-      return this.users.filter(u => 
-        u.username.toLowerCase().includes(q) || 
-        u.email.toLowerCase().includes(q) ||
-        `${u.first_name} ${u.last_name}`.toLowerCase().includes(q)
-      );
+      let filtered = this.users;
+      if (this.searchQuery) {
+        const q = this.searchQuery.toLowerCase();
+        filtered = this.users.filter(u => 
+          u.username.toLowerCase().includes(q) || 
+          u.email.toLowerCase().includes(q) ||
+          `${u.first_name} ${u.last_name}`.toLowerCase().includes(q)
+        );
+      }
+      return filtered;
+    },
+    paginatedUsers() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.filteredUsers.slice(start, start + this.itemsPerPage);
     },
     activeUsersCount() {
        return this.users.filter(u => u.is_active !== false).length;
+    }
+  },
+  watch: {
+    searchQuery() {
+      this.currentPage = 1;
     }
   },
   mounted() {
@@ -477,7 +503,7 @@ export default {
 .pulsing { animation: hPulse 2s infinite; }
 @keyframes hPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59,130,246,0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 20px 5px rgba(59,130,246,0.2); } }
 
-.h-text h1 { margin: 0; font-size: 2.2rem; font-weight: 950; color: white; letter-spacing: -1px; }
+.h-text h1 { margin: 0; font-size: 2.2rem; font-weight: 900; color: white; letter-spacing: -1px; }
 .h-text p { margin: 4px 0 0 0; color: var(--text-muted); opacity: 0.7; font-size: 1.1rem; }
 
 .h-actions-hud { display: flex; align-items: center; gap: 15px; padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
@@ -502,7 +528,7 @@ export default {
 .tile-content { display: flex; align-items: center; gap: 20px; position: relative; z-index: 2; }
 .t-icon { width: 54px; height: 54px; border-radius: 16px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--text-main); }
 .t-data { display: flex; flex-direction: column; line-height: 1; }
-.t-val { font-size: 2.8rem; font-weight: 950; color: white; }
+.t-val { font-size: 2.8rem; font-weight: 900; color: white; }
 .t-lbl { font-size: 0.9rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-top: 8px; letter-spacing: 1px; }
 
 /* Personnel Directory */
@@ -524,7 +550,7 @@ export default {
 .hexagon-avatar {
   width: 50px; height: 50px; background: rgba(59, 130, 246, 0.2); 
   clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
-  display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 950; color: #3b82f6; position: relative;
+  display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: #3b82f6; position: relative;
 }
 .hex-inner { position: relative; z-index: 2; }
 .status-pulse { 
@@ -536,10 +562,10 @@ export default {
 
 .user-id-cell { display: flex; align-items: center; gap: 18px; }
 .user-meta { display: flex; flex-direction: column; }
-.u-name { font-weight: 850; color: white; font-size: 1.05rem; }
+.u-name { font-weight: 800; color: white; font-size: 1.05rem; }
 .u-handle { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; }
 
-.group-hud-badge { padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 850; background: rgba(0,0,0,0.2); color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.05); }
+.group-hud-badge { padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 800; background: rgba(0,0,0,0.2); color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.05); }
 .admin-badge { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; border-color: rgba(139, 92, 246, 0.2); }
 
 .date-cell { color: var(--text-muted); font-weight: 700; font-size: 0.9rem; }
@@ -559,7 +585,7 @@ export default {
 
 .hyper-form { padding: 30px; display: flex; flex-direction: column; gap: 24px; max-height: 80vh; overflow-y: auto; scrollbar-width: thin; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.form-group-hud label { display: block; font-weight: 850; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+.form-group-hud label { display: block; font-weight: 800; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
 .input-hud, .select-hud { display: flex; align-items: center; gap: 15px; padding: 12px 20px; border-radius: 16px; background: rgba(0,0,0,0.2); }
 .input-hud i, .select-hud i { color: var(--text-muted); font-size: 1.1rem; }
 .input-hud input, .select-hud select { background: transparent; border: none; flex: 1; color: white; font-weight: 700; outline: none !important; -webkit-appearance: none; appearance: none; box-shadow: none !important; }
@@ -587,7 +613,7 @@ export default {
 .danger-ring { width: 90px; height: 90px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 10px auto; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
 .danger-ring.pulsing { animation: dangerPulse 2s infinite; }
 @keyframes dangerPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0.1); } }
-.mini-modal h3 { font-size: 1.8rem; font-weight: 950; color: white; margin: 0; }
+.mini-modal h3 { font-size: 1.8rem; font-weight: 900; color: white; margin: 0; }
 .mini-modal p { font-size: 1.1rem; color: var(--text-muted); font-weight: 600; line-height: 1.5; margin: 0 0 15px 0; }
 
 .empty-directory-premium {
@@ -626,7 +652,7 @@ export default {
 
 .empty-directory-premium h3 {
   font-size: 2.8rem;
-  font-weight: 950;
+  font-weight: 900;
   color: var(--text-main);
   margin: 0 0 12px 0;
   letter-spacing: -0.04em;

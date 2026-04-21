@@ -322,7 +322,7 @@ onMounted(async () => {
 .hex-glint { position: absolute; inset: 0; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent); animation: glint 4s infinite; }
 @keyframes glint { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } }
 
-.header-text h1 { margin: 0; font-size: 2.3rem; font-weight: 950; color: var(--text-main); letter-spacing: -1px; }
+.header-text h1 { margin: 0; font-size: 2.3rem; font-weight: 900; color: var(--text-main); letter-spacing: -1px; }
 .user-handle { margin: 4px 0 0 0; color: var(--primary); font-weight: 800; opacity: 0.8; font-size: 1.1rem; }
 
 /* Period Select Hyper */
@@ -405,7 +405,7 @@ onMounted(async () => {
 
 .state-container-premium h3 {
   font-size: 2.8rem;
-  font-weight: 950;
+  font-weight: 900;
   color: var(--text-main);
   margin: 0;
   letter-spacing: -0.04em;
@@ -446,12 +446,12 @@ onMounted(async () => {
 .hud-progress { fill: none; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 390; transition: stroke-dashoffset 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
 .hud-score-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; line-height: 1; }
-.hud-score-center .score-val { font-size: 3rem; font-weight: 950; }
+.hud-score-center .score-val { font-size: 3rem; font-weight: 900; }
 .hud-score-center .score-percent { font-size: 1rem; font-weight: 800; opacity: 0.5; margin-top: 5px; }
 
 .hud-meta { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .hud-label { font-size: 0.85rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-.grade-badge { padding: 4px 14px; border-radius: 100px; font-weight: 950; color: white; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.grade-badge { padding: 4px 14px; border-radius: 100px; font-weight: 900; color: white; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 
 .pulse-aura { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--aura-color); opacity: 0.05; filter: blur(40px); animation: auraBloom 4s infinite alternate; }
 @keyframes auraBloom { from { transform: scale(0.8); opacity: 0.03; } to { transform: scale(1.2); opacity: 0.07; } }
@@ -460,7 +460,7 @@ onMounted(async () => {
 .energy-icon { font-size: 3.2rem; position: relative; }
 .icon-glow { position: absolute; inset: 10px; background: currentColor; filter: blur(25px); opacity: 0.4; }
 .energy-data { display: flex; flex-direction: column; align-items: center; }
-.energy-data .val { font-size: 3.5rem; font-weight: 950; color: var(--text-main); }
+.energy-data .val { font-size: 3.5rem; font-weight: 900; color: var(--text-main); }
 .energy-data .lbl { font-size: 0.9rem; font-weight: 800; opacity: 0.5; text-transform: uppercase; }
 .points-micro-breakdown { display: flex; gap: 10px; width: 100%; justify-content: center; }
 .pm-chip { padding: 5px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 6px; }
@@ -469,7 +469,7 @@ onMounted(async () => {
 
 /* Rank Shield */
 .shield-container { position: relative; font-size: 5rem; color: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; }
-.rank-number { position: absolute; font-size: 2.2rem; font-weight: 950; color: var(--text-main); }
+.rank-number { position: absolute; font-size: 2.2rem; font-weight: 900; color: var(--text-main); }
 .shield-container.gold { color: rgba(255, 215, 0, 0.15); filter: drop-shadow(0 0 10px rgba(255,215,0,0.1)); }
 .shield-container.gold .rank-number { color: #ffd700; }
 
@@ -492,7 +492,7 @@ onMounted(async () => {
 .type-pill.manual { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
 .weight-tag { font-weight: 900; color: var(--text-muted); font-size: 0.85rem; opacity: 0.5; }
 
-.metric-name { margin: 0; font-size: 1.2rem; font-weight: 850; color: var(--text-main); }
+.metric-name { margin: 0; font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
 
 .metric-hud-bar { display: flex; align-items: center; gap: 20px; }
 .bar-hud-track { flex: 1; height: 12px; background: rgba(0,0,0,0.3); border-radius: 100px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.05); }

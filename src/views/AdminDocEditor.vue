@@ -27,13 +27,13 @@
             <i class="fa-solid fa-cloud-arrow-up"></i>
             حُفظ تلقائياً {{ formatSavedAt(lastSavedAt) }}
           </span>
-          <button v-if="isEditing" @click="deleteDocument" class="sentry-btn sentry-btn-danger">
+          <button v-if="isEditing" @click="deleteDocument" class="btn btn-danger">
             <i class="fa-solid fa-trash-can"></i> حذف
           </button>
-          <button @click="router.back()" class="sentry-btn sentry-btn-outline">
+          <button @click="router.back()" class="btn btn-outline">
             <i class="fa-solid fa-xmark"></i> إلغاء
           </button>
-          <button @click="saveDocument" class="sentry-btn sentry-btn-primary btn-save" :class="{ 'btn-loading': loadingSave, 'btn-success': isSuccess }" :disabled="loadingSave">
+          <button @click="saveDocument" class="btn btn-primary btn-save" :class="{ 'btn-loading': loadingSave, 'btn-success': isSuccess }" :disabled="loadingSave">
             <span v-if="loadingSave"><i class="fa-solid fa-spinner fa-spin"></i></span>
             <span v-else-if="isSuccess"><i class="fa-solid fa-check"></i></span>
             <span v-else><i class="fa-solid fa-check"></i> {{ isEditing ? 'تحديث التوثيق' : 'حفظ التوثيق' }}</span>
@@ -62,19 +62,19 @@
         <!-- Form Section -->
         <div class="vp-form-grid">
           <div class="form-group full-width">
-            <label class="sentry-label">عنوان الصفحة</label>
+            <label class="elite-label">عنوان الصفحة</label>
             <input 
               type="text" 
               v-model="doc.title" 
-              class="sentry-input title-input" 
+              class="elite-input title-input" 
               placeholder="مثلاً: دليل التهيئة الأولية..." 
             />
           </div>
 
           <div class="form-group">
-            <label class="sentry-label">التوثيق الأب (اختياري)</label>
+            <label class="elite-label">التوثيق الأب (اختياري)</label>
             <div class="select-wrapper">
-              <select v-model="doc.parent" class="sentry-select">
+              <select v-model="doc.parent" class="elite-select">
                 <option :value="null">-- هذا القسم رئيسي --</option>
                 <option v-for="p in possibleParents" :key="p.id" :value="p.id">
                   {{ p.displayTitle }}
@@ -85,17 +85,17 @@
           </div>
 
           <div class="form-group">
-            <label class="sentry-label">الترتيب</label>
+            <label class="elite-label">الترتيب</label>
             <input 
               type="number" 
               v-model="doc.order" 
-              class="sentry-input" 
+              class="elite-input" 
               placeholder="0" 
             />
           </div>
 
           <div class="form-group full-width">
-            <label class="sentry-label">التصنيفات (Tags)</label>
+            <label class="elite-label">التصنيفات (Tags)</label>
             <div class="tags-selector">
               <div class="tags-selected">
                 <span
@@ -734,53 +734,6 @@ onUnmounted(() => {
   gap: 12px;
 }
 
-/* Sentry Buttons */
-.sentry-btn {
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid transparent;
-}
-
-.sentry-btn-primary {
-  background: var(--primary);
-  color: white;
-  box-shadow: 0 4px 12px var(--primary-bg);
-}
-
-.sentry-btn-primary:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px var(--primary-bg);
-}
-
-.sentry-btn-outline {
-  background: var(--bg-surface);
-  color: var(--text-main);
-  border-color: var(--border-color);
-}
-
-.sentry-btn-outline:hover {
-  background: var(--bg-hover);
-  border-color: var(--text-muted);
-}
-
-.sentry-btn-danger {
-  background: transparent;
-  color: var(--ds-danger, #ff4d4f);
-  border-color: var(--ds-danger, #ff4d4f);
-}
-
-.sentry-btn-danger:hover {
-  background: var(--ds-danger-bg, #fff1f0);
-}
-
 /* Form Layout */
 .vp-editor-body {
   padding: 24px;
@@ -808,36 +761,37 @@ onUnmounted(() => {
 
 .form-group { display: flex; flex-direction: column; gap: 8px; }
 
-.sentry-label {
+.elite-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
   padding-right: 4px;
 }
 
-.sentry-input, .sentry-select {
+.elite-input, .elite-select {
   width: 100%;
   padding: 12px 16px;
-  border-radius: 12px;
-  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
   background: var(--bg-surface);
   color: var(--text-main);
   font-family: inherit;
   font-size: 14px;
   outline: none;
   transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .title-input { font-size: 20px; font-weight: 700; padding: 16px; border-color: transparent; background: var(--bg-hover); }
 .title-input:focus { border-color: var(--primary); background: var(--bg-surface); }
 
-.sentry-input:focus, .sentry-select:focus {
+.elite-input:focus, .elite-select:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 4px var(--primary-bg);
 }
 
 .select-wrapper { position: relative; width: 100%; }
-.sentry-select { appearance: none; padding-left: 40px; }
+.elite-select { appearance: none; padding-left: 40px; }
 .select-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 12px; }
 
 /* Editor Stylings */

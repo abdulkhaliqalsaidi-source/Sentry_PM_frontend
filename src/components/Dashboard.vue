@@ -276,7 +276,7 @@
                                     <div v-else class="notification-item" v-for="notif in notificationList" :key="notif.id" :class="{'unread': !notif.is_read}" @click="handleNotificationClick(notif)">
                                         <div class="notification-avatar">{{ notif.actor_name ? notif.actor_name.charAt(0).toUpperCase() : 'U' }}</div>
                                         <div class="notification-content">
-                                            <p><strong>{{ notif.actor_name }}</strong> {{ $t(`notifications.${notif.verb.replace(/ /g, '_')}`) || notif.verb }} <strong>{{ notif.task_title || $t('notifications.a_task') }}</strong></p>
+                                            <p><strong>{{ notif.actor_name }}</strong> {{ notif.verb ? ($t(`notifications.${notif.verb.replace(/ /g, '_')}`) || notif.verb) : '' }} <strong>{{ notif.task_title || $t('notifications.a_task') }}</strong></p>
                                             <span class="notification-time">{{ formatTimeAgo(notif.created_at) }}</span>
                                         </div>
                                         <div class="unread-dot" v-if="!notif.is_read"></div>
@@ -529,21 +529,7 @@ export default {
             userRole: localStorage.getItem('user_role') || '',
         }
     },
-    directives: {
-        clickOutside: {
-            mounted(el, binding) {
-                el.clickOutsideEvent = function(event) {
-                    if (!(el === event.target || el.contains(event.target))) {
-                        binding.value(event);
-                    }
-                };
-                document.body.addEventListener('click', el.clickOutsideEvent);
-            },
-            unmounted(el) {
-                document.body.removeEventListener('click', el.clickOutsideEvent);
-            }
-        }
-    },
+    // FIX #14: removed local directives — v-click-outside is registered globally in main.js
     computed: {
         isSuperuser() {
             return localStorage.getItem('is_superuser') === 'true';
@@ -573,14 +559,12 @@ export default {
             return this.$t(`common.${this.pageTitle}`) || this.pageTitle;
         },
         hideSharedHeader() {
-            // These routes have their own top bar
-            const selfHeaderRoutes = [
-                'ProjectBoard', 'ProjectBacklog', 'ProjectReports',
-                'ProjectChat', 'ProjectDocs', 'AddProjectDoc', 'EditProjectDoc',
-                'AutomationRules', 'BottleneckAnalysis', 'CustomFieldsConfig',
-                'ProjectReleases', 'PluginsAdmin', 'ProjectMembers'
-            ];
-            return selfHeaderRoutes.includes(this.$route.name);
+            // FIX #15: use meta.hideHeader instead of hardcoded route names
+            return !!this.$route.meta?.hideHeader;
+        },
+        // FIX #18: locale-reactive key forces re-render of formatTimeAgo calls
+        currentLocale() {
+            return this.$i18n.locale;
         },
         activeProjectId() {
             return this.$route.params.projectId;
@@ -693,7 +677,6 @@ export default {
     watch: {
         activeProjectId(newVal, oldVal) {
             if (newVal !== oldVal) {
-                console.log('Dashboard: Project changed to', newVal);
                 if (newVal) {
                     const projectObj = this.allProjects.find(p => p.id == newVal);
                     if (projectObj) {
@@ -749,7 +732,6 @@ export default {
             this.isSidebarCollapsed = !this.isSidebarCollapsed;
         },
         forceNavigateTo(section) {
-            console.log('Dashboard: Forcing navigation to', section);
             // Map legacy sections to routes
             const routeMap = {
                 'overview': '/dashboard',
@@ -763,7 +745,6 @@ export default {
             this.$router.push(path);
         },
         onProfileUpdated(updatedUser) {
-            console.log('Dashboard: Handling profile update', updatedUser);
             // Re-sync local state from localStorage (already updated by SettingsView)
             this.selectedProject = localStorage.getItem('user_project_name') || 'All Projects';
             
@@ -821,17 +802,17 @@ export default {
             const username = localStorage.getItem('username');
             if (!username) return;
 
-            if (this.notificationWs) {
+            // FIX #13: only close if not already closed/closing
+            if (this.notificationWs && this.notificationWs.readyState !== WebSocket.CLOSED) {
+                this.notificationWs.onclose = null; // prevent reconnect loop
                 this.notificationWs.close();
             }
 
-            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${getWsBase()}/ws/notifications/${username}/`;
 
             this.notificationWs = new WebSocket(wsUrl);
 
             this.notificationWs.onopen = () => {
-                console.log('Notification WebSocket connected');
                 if (this.notificationReconnectTimer) {
                     clearInterval(this.notificationReconnectTimer);
                     this.notificationReconnectTimer = null;
@@ -850,7 +831,6 @@ export default {
             };
 
             this.notificationWs.onclose = () => {
-                console.log('Notification WebSocket disconnected. Reconnecting...');
                 if (!this.notificationReconnectTimer) {
                     this.notificationReconnectTimer = setInterval(this.connectNotificationWebSocket, 5000);
                 }
@@ -893,6 +873,8 @@ export default {
             this.$router.push('/settings?tab=notifications');
         },
         formatTimeAgo(dateString) {
+            // FIX #18: reference currentLocale so Vue re-evaluates when language changes
+            void this.currentLocale;
             if (!dateString) return '';
             const date = new Date(dateString);
             const now = new Date();
@@ -902,13 +884,6 @@ export default {
             if (diffInSeconds < 3600) return this.$t('common.minutes_ago', { n: Math.floor(diffInSeconds / 60) });
             if (diffInSeconds < 86400) return this.$t('common.hours_ago', { n: Math.floor(diffInSeconds / 3600) });
             return this.$t('common.days_ago', { n: Math.floor(diffInSeconds / 86400) });
-        },
-        showToast(message, type = 'success') {
-            const id = Date.now();
-            this.notifications.push({ id, message, type });
-            setTimeout(() => {
-                this.notifications = this.notifications.filter(n => n.id !== id);
-            }, 3000);
         },
         async refreshData() {
             this.loading = true;
@@ -932,15 +907,7 @@ export default {
                 
                 // If we are in a project-specific route, filter by project name
                 if (routeProjectId) {
-                    // Make sure projects are loaded so we can find the name
-                    if (this.allProjects.length === 0) {
-                         try {
-                            const pRes = await axios.get('/api/pm/projects/');
-                            this.allProjects = pRes.data;
-                            this.allProjectNames = this.allProjects.map(p => p.name);
-                        } catch (e) { console.error(e); }
-                    }
-                    
+                    // allProjects already fetched above — no second request needed
                     const projectObj = this.allProjects.find(p => p.id == routeProjectId);
                     if (projectObj && projectObj.name) {
                         params.set('project_name', projectObj.name);
@@ -967,7 +934,6 @@ export default {
             }
         },
         async handleViewError(issueId) {
-            console.log("Viewing error from task:", issueId);
             // 1. Navigate to issues — use project context if available
             const projectId = this.activeProjectId;
             if (projectId) {
@@ -1038,7 +1004,6 @@ export default {
                     if (response.data.user.permissions) {
                         this.permissions = response.data.user.permissions;
                         localStorage.setItem('user_permissions', JSON.stringify(this.permissions));
-                        console.log('Refreshed permissions:', this.permissions);
                     }
                     if (response.data.user.avatar) {
                         this.avatar = response.data.user.avatar;
@@ -1111,19 +1076,14 @@ export default {
                         this.currentConsoleLogs = data.console_logs || [];
 
                         if (data.events && data.events.length > 0) {
-                            console.log('📹 Replay: Received', data.events.length, 'events');
-                            
                             // تحليل الأحداث
                             const eventTypes = {};
                             data.events.forEach(e => {
                                 eventTypes[e.type] = (eventTypes[e.type] || 0) + 1;
                             });
-                            console.log('📊 Event types:', eventTypes);
                             
                             const hasMeta = data.events.some(e => e.type === 4);
                             const hasSnapshot = data.events.some(e => e.type === 2);
-                            
-                            console.log('✅ Has Meta:', hasMeta, '| Has Snapshot:', hasSnapshot);
                             
                             let processedEvents = [...data.events];
                             
@@ -1204,8 +1164,6 @@ export default {
                                 const originalWidth = metaEvent?.data?.width || 1920;
                                 const originalHeight = metaEvent?.data?.height || 1080;
                                 
-                                console.log('🖥️ Original dimensions:', originalWidth, 'x', originalHeight);
-                                
                                 // حساب الأبعاد بشكل متناسق
                                 const containerElement = container.parentElement;
                                 const availableWidth = containerElement ? containerElement.clientWidth - 80 : window.innerWidth * 0.85;
@@ -1227,8 +1185,6 @@ export default {
                                 // التأكد من الحد الأدنى
                                 playerWidth = Math.max(playerWidth, 800);
                                 playerHeight = Math.max(playerHeight, 600);
-                                
-                                console.log('📐 Player dimensions:', Math.round(playerWidth), 'x', Math.round(playerHeight), '| Aspect ratio:', aspectRatio.toFixed(2));
 
                                 try {
                                     this.rrPlayerInstance = new rrwebPlayer({
@@ -1253,8 +1209,6 @@ export default {
                                         },
                                     });
 
-                                    console.log('✅ Player initialized successfully');
-
                                     // إزالة sandbox من iframe للسماح بتنفيذ rrweb
                                     setTimeout(() => {
                                         const iframe = container.querySelector('iframe');
@@ -1264,7 +1218,6 @@ export default {
                                             iframe.style.width = '100%';
                                             iframe.style.height = '100%';
                                             iframe.style.border = 'none';
-                                            console.log('🔓 Iframe sandbox removed and styled');
                                         }
                                     }, 100);
                                     
@@ -1540,14 +1493,6 @@ export default {
     justify-content: center;
     width: 100%;
     height: 100%;
-}
-
-.btn-sidebar-toggle-brand .toggle-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -1589,18 +1534,6 @@ export default {
     scrollbar-width: none; /* Hide scrollbar for premium look */
 }
 .sidebar-nav::-webkit-scrollbar { display: none; }
-
-.nav-section-label {
-    padding: 16px 12px 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-    white-space: nowrap;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
 
 /* Standard Nav Item */
 .nav-item {
@@ -1711,6 +1644,9 @@ export default {
     font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
 }
 
 .nav-item.disabled {

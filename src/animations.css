@@ -1,13 +1,12 @@
 /* ============================================================
-   SENTRY CLONE — Complete LottieFiles-Inspired UI Design System
-   Covers ALL 27 components: Buttons, Cards, Modals, Nav,
-   Pages, Lists, Forms, Badges, Toasts, Animations
+   SENTRY — Lean Animation System
+   مبدأ: حركة هادفة فقط. لا مبالغة، لا تشتيت.
    ============================================================ */
 
-/* ── LottieFiles Design Tokens ──────────────────────────────── */
+/* ── Design Tokens ──────────────────────────────────────────── */
 :root {
     --lf-teal: var(--primary-gradient-end, #00DDB3);
-    --lf-teal-dim: var(--primary-bg, rgba(0, 221, 179, 0.15));
+    --lf-teal-dim: var(--primary-bg, rgba(0, 221, 179, 0.12));
     --lf-purple: var(--primary);
     --lf-purple-dim: var(--primary-bg);
     --lf-pink: #F048A5;
@@ -21,150 +20,107 @@
     --lf-grad-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
     --lf-grad-success: linear-gradient(135deg, #10b981 0%, #00DDB3 100%);
 
-    --lf-glow-teal: 0 0 18px rgba(0, 221, 179, 0.38), 0 0 40px rgba(0, 221, 179, 0.12);
-    --lf-glow-purple: 0 0 18px var(--primary-bg), 0 0 40px var(--primary-bg);
-    --lf-glow-pink: 0 0 18px rgba(240, 72, 165, 0.4), 0 0 40px rgba(240, 72, 165, 0.14);
-    --lf-glow-danger: 0 0 18px rgba(244, 63, 94, 0.4), 0 0 36px rgba(244, 63, 94, 0.12);
+    --lf-glow-teal: 0 0 14px rgba(0, 221, 179, 0.25);
+    --lf-glow-purple: 0 0 14px var(--primary-bg);
+    --lf-glow-danger: 0 0 14px rgba(244, 63, 94, 0.3);
 
     --lf-card-bg: var(--glass-bg);
     --lf-card-border: var(--border-color);
-    --lf-card-shadow: var(--shadow-lg);
-    --lf-card-radius: 18px;
-    --lf-btn-radius: 12px;
+    --lf-card-shadow: var(--shadow-md);
+    --lf-card-radius: 16px;
+    --lf-btn-radius: 10px;
+
+    /* Speed tokens — تغيير واحد يُصحّح الكل */
+    --dur-fast:   0.15s;
+    --dur-normal: 0.22s;
+    --dur-slow:   0.35s;
+    --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* ── prefers-reduced-motion: تعطيل كل الحركات ────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 
 /* ════════════════════════════════════════════════════════════
-   SECTION 1 — ALL BUTTONS
+   SECTION 1 — BUTTONS
    ════════════════════════════════════════════════════════════ */
 
-/* ── Universal button base transition ───────────────────── */
-button,
-[class*="btn-"] {
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow 0.2s ease,
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease !important;
+/* قاعدة أساسية للجميع */
+button, [class*="btn-"] {
+    transition:
+        background-color var(--dur-fast) ease,
+        border-color     var(--dur-fast) ease,
+        color            var(--dur-fast) ease,
+        box-shadow       var(--dur-fast) ease,
+        transform        var(--dur-fast) ease !important;
 }
 
-/* ── Primary (btn-primary, btn-create, btn-start) */
-.btn-primary,
-.btn-create,
-.btn-start,
-.lf-btn-primary {
+/* Primary */
+.btn-primary, .btn-create, .btn-start, .lf-btn-primary {
     position: relative;
     border: none !important;
     border-radius: var(--lf-btn-radius) !important;
-    background: linear-gradient(135deg, var(--primary), var(--primary-hover)) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: #fff;
     font-weight: 700;
-    overflow: hidden;
     cursor: pointer;
 }
 
-.btn-primary::before,
-.btn-create::before,
-.btn-success::before,
-.btn-start::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.5s ease;
-    pointer-events: none;
+.btn-primary:hover, .btn-create:hover, .btn-start:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 4px 14px var(--primary-glow) !important;
+    transform: translateY(-1px) !important;
 }
 
-.btn-primary:hover::before,
-.btn-create:hover::before,
-.btn-success:hover::before,
-.btn-start:hover::before {
-    left: 160%;
+.btn-primary:active, .btn-create:active {
+    transform: translateY(0) !important;
+    filter: brightness(0.97);
 }
 
-.btn-primary:hover,
-.btn-create:hover,
-.btn-start:hover {
-    transform: translateY(-3px) scale(1.03) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22), 0 0 18px var(--primary-bg) !important;
+/* Secondary / Ghost */
+.btn-secondary, .btn-ghost, .btn-back, .btn-cancel, .btn-back-kanban {
+    border: 1px solid var(--border-color);
+    background: var(--bg-hover);
+    color: var(--text-main);
+    border-radius: var(--lf-btn-radius) !important;
+    cursor: pointer;
+}
+
+.btn-secondary:hover, .btn-ghost:hover, .btn-back:hover,
+.btn-cancel:hover, .btn-back-kanban:hover {
+    background: var(--primary-bg);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Danger */
+.btn-danger, .btn-delete, .btn-complete {
+    border: none !important;
+    border-radius: var(--lf-btn-radius) !important;
+    background: var(--lf-grad-danger);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-danger:hover, .btn-delete:hover, .btn-complete:hover {
     filter: brightness(1.08);
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.3) !important;
+    transform: translateY(-1px) !important;
 }
 
-.btn-primary:active,
-.btn-create:active {
-    transform: scale(0.96) !important;
-    box-shadow: none !important;
-}
-
-/* ── Ghost / Secondary (btn-secondary, btn-ghost, btn-back, btn-cancel) */
-.btn-secondary,
-.btn-ghost,
-.btn-back,
-.btn-cancel,
-.btn-back-kanban {
-    position: relative;
-    border: 1.5px solid var(--primary-bg) !important;
-    background: transparent !important;
-    color: var(--text-main) !important;
-    border-radius: var(--lf-btn-radius) !important;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.btn-secondary:hover,
-.btn-ghost:hover,
-.btn-back:hover,
-.btn-cancel:hover,
-.btn-back-kanban:hover {
-    border-color: var(--lf-purple) !important;
-    background: var(--lf-purple-dim) !important;
-    box-shadow: 0 0 16px var(--primary-bg) !important;
-    transform: translateY(-2px) !important;
-}
-
-/* ── Danger (btn-danger, btn-delete, btn-complete) */
-.btn-danger,
-.btn-delete,
-.btn-complete {
-    border: none !important;
-    border-radius: var(--lf-btn-radius) !important;
-    background: var(--lf-grad-danger) !important;
-    color: #fff !important;
-    font-weight: 700;
-    cursor: pointer;
+/* Refresh / Glass */
+.btn-refresh, .glass-btn {
     overflow: hidden;
-}
-
-.btn-danger:hover,
-.btn-delete:hover,
-.btn-complete:hover {
-    transform: translateY(-3px) scale(1.03) !important;
-    box-shadow: var(--lf-glow-danger) !important;
-}
-
-/* ── Refresh / Glass Buttons (btn-refresh, glass-btn) */
-.btn-refresh,
-.glass-btn {
-    border: 1.5px solid rgba(0, 221, 179, 0.35) !important;
-    background: rgba(0, 221, 179, 0.06) !important;
-    color: var(--lf-teal) !important;
     border-radius: var(--lf-btn-radius) !important;
-    font-weight: 600;
-    overflow: hidden;
 }
 
-.btn-refresh:hover:not(:disabled),
-.glass-btn:hover:not(:disabled) {
-    background: rgba(0, 221, 179, 0.14) !important;
-    box-shadow: var(--lf-glow-teal) !important;
-    transform: translateY(-2px) !important;
-    border-color: var(--lf-teal) !important;
-}
-
-/* Light Mode Overrides for Visibility */
 [data-theme="light"] .btn-refresh,
 [data-theme="light"] .glass-btn {
     background: var(--primary) !important;
@@ -175,695 +131,267 @@ button,
 [data-theme="light"] .btn-refresh:hover:not(:disabled),
 [data-theme="light"] .glass-btn:hover:not(:disabled) {
     background: var(--primary-hover) !important;
-    box-shadow: 0 5px 15px var(--primary-glow) !important;
+    box-shadow: 0 4px 12px var(--primary-glow) !important;
 }
 
-/* Spin the refresh icon 180° on hover */
+[data-theme="dark"] .btn-refresh,
+[data-theme="dark"] .glass-btn {
+    border: 1px solid rgba(0, 221, 179, 0.3) !important;
+    background: rgba(0, 221, 179, 0.05) !important;
+    color: var(--lf-teal) !important;
+}
+
+[data-theme="dark"] .btn-refresh:hover:not(:disabled),
+[data-theme="dark"] .glass-btn:hover:not(:disabled) {
+    background: rgba(0, 221, 179, 0.12) !important;
+    border-color: var(--lf-teal) !important;
+}
+
+/* تدوير أيقونة Refresh */
+.btn-refresh i { transition: transform 0.4s ease !important; display: inline-block; }
 .btn-refresh:not(.loading):hover i.fa-rotate-right,
 .btn-refresh:not(.loading):hover i.fa-sync,
 .btn-refresh:not(.loading):hover i.fa-refresh {
     transform: rotate(180deg) !important;
 }
 
-.btn-refresh i {
-    transition: transform 0.45s ease !important;
-    display: inline-block;
-}
-
-/* ── Icon Buttons (btn-icon, btn-action-icon, btn-icon-sm) */
-.btn-icon,
-.btn-action-icon,
-.btn-icon-sm,
-.btn-close {
+/* Icon Buttons */
+.btn-icon, .btn-action-icon, .btn-icon-sm, .btn-close {
     border-radius: 8px !important;
-    transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease !important;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease !important;
 }
 
-.btn-icon:hover,
-.btn-action-icon:hover,
-.btn-icon-sm:hover {
-    background: var(--lf-purple-dim) !important;
-    transform: scale(1.12) !important;
-    color: var(--lf-purple) !important;
+.btn-icon:hover, .btn-action-icon:hover, .btn-icon-sm:hover {
+    background: var(--primary-bg) !important;
+    color: var(--primary) !important;
 }
 
-.btn-icon.text-danger:hover,
-.btn-action-icon.text-danger:hover {
-    background: rgba(244, 63, 94, 0.12) !important;
+.btn-icon.text-danger:hover, .btn-action-icon.text-danger:hover {
+    background: rgba(244, 63, 94, 0.1) !important;
     color: var(--lf-danger) !important;
-    box-shadow: 0 0 12px rgba(244, 63, 94, 0.25) !important;
 }
 
-/* ── Small / XS Buttons (btn-sm, btn-xs, btn-outline) */
-.btn-sm,
-.btn-xs,
-.btn-outline {
+/* Small / Outline */
+.btn-sm, .btn-xs, .btn-outline {
     border-radius: 8px !important;
     font-weight: 600;
-    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow 0.18s ease !important;
 }
 
-.btn-sm:hover,
-.btn-xs:hover,
-.btn-outline:hover {
-    transform: translateY(-2px) scale(1.04) !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18) !important;
-}
-
-.btn-xs.btn-primary:hover {
-    box-shadow: 0 4px 14px var(--primary-bg) !important;
-}
-
-/* ── Toolbar Buttons (btn-toolbar, btn-text) */
-.btn-toolbar,
-.btn-text {
+/* Toolbar */
+.btn-toolbar, .btn-text {
     border-radius: 8px !important;
-    transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease !important;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease !important;
 }
 
-.btn-toolbar:hover {
-    background: var(--lf-purple-dim) !important;
-    color: var(--lf-purple) !important;
-    transform: translateY(-1px) !important;
-}
+.btn-toolbar:hover { background: var(--primary-bg) !important; color: var(--primary) !important; }
+.btn-text:hover    { color: var(--primary) !important; }
 
-.btn-text:hover {
-    color: var(--primary) !important;
-    transform: translateY(-1px) !important;
-}
-
-/* ── Send Button (chat) ───────────────────────────────────── */
+/* Send (chat) */
 .send-btn {
     background: linear-gradient(135deg, var(--primary), var(--primary-hover)) !important;
     border: none !important;
     border-radius: 10px !important;
 }
-
-.send-btn:hover:not(:disabled) {
-    transform: scale(1.1) rotate(5deg) !important;
-    box-shadow: 0 0 18px var(--primary-bg) !important;
-}
-
-/* ============================================================
-   SECTION 14 — PREMIUM 3D STAT CARDS (Dashboard)
-   ============================================================ */
-.stat-card-premium {
-    position: relative;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    transform-style: preserve-3d;
-    z-index: 1;
-}
-
-/* Animated Gradient Border Layer */
-.stat-card-premium::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 22px;
-    background: linear-gradient(135deg, var(--primary-bg), transparent 40%, transparent 60%, rgba(0, 221, 179, 0.5));
-    z-index: -2;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-/* Internal Glow Layer */
-.stat-card-premium::after {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    border-radius: 19px;
-    background: var(--bg-card);
-    z-index: -1;
-    transition: background 0.5s ease;
-}
-
-/* Hover Lift and Glow */
-.stat-card-premium:hover {
-    transform: translateY(-8px) scale(1.02) rotateX(2deg) rotateY(-2deg);
-    box-shadow:
-        20px 20px 40px rgba(0, 0, 0, 0.1),
-        -10px -10px 30px rgba(255, 255, 255, 0.02),
-        0 0 20px var(--primary-bg);
-    /* Purple soft glow */
-    border-color: transparent;
-}
-
-.stat-card-premium:hover::before {
-    opacity: 1;
-    animation: lf-rotate 4s linear infinite;
-}
-
-[data-theme="dark"] .stat-card-premium:hover::after {
-    background: rgba(20, 20, 35, 0.95);
-    /* Deepen on dark mode */
-}
-
-[data-theme="light"] .stat-card-premium:hover::after {
-    background: rgba(255, 255, 255, 0.95);
-    /* Brighten on light mode */
-}
-
-/* Icon Wrapper Floating Animation */
-.stat-icon-wrapper {
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    position: relative;
-    z-index: 2;
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.stat-icon-wrapper::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    background: currentcolor;
-    opacity: 0.15;
-    transition: all 0.5s ease;
-}
-
-.stat-card-premium:hover .stat-icon-wrapper {
-    transform: scale(1.15) translateZ(20px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-}
-
-.stat-card-premium:hover .stat-icon-wrapper::before {
-    opacity: 0.25;
-}
-
-.stat-icon-wrapper i {
-    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.stat-card-premium:hover .stat-icon-wrapper i {
-    transform: rotate(10deg);
-}
-
-/* Text Content Transitions */
-.stat-content {
-    display: flex;
-    flex-direction: column;
-    z-index: 2;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.stat-card-premium:hover .stat-content {
-    transform: translateX(5px) translateZ(10px);
-}
-
-.stat-value {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--text-main);
-    line-height: 1.1;
-    margin-bottom: 4px;
-    background: var(--text-main);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transition: all 0.5s ease;
-}
-
-.stat-card-premium:hover .stat-value {
-    background: var(--lf-grad-main);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.stat-label {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/* Card Themes */
-.stat-card-premium.warning .stat-icon-wrapper {
-    color: var(--lf-orange);
-}
-
-.stat-card-premium.warning:hover {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.15);
-}
-
-.stat-card-premium.primary .stat-icon-wrapper {
-    color: var(--lf-purple);
-}
-
-.stat-card-premium.success .stat-icon-wrapper {
-    color: var(--lf-teal);
-}
-
-.stat-card-premium.info .stat-icon-wrapper {
-    color: var(--lf-blue);
-}
-
-/* ── Tab Buttons ──────────────────────────────────────────── */
-/* Fix for specific dashboard components */
-.glass-btn {
-    position: relative;
-    overflow: hidden;
-}
-
-.tab-btn {
-    position: relative;
-    overflow: hidden;
-    transition: color 0.2s ease, background 0.2s ease !important;
-}
-
-.tab-btn::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--lf-grad-main);
-    transform: scaleX(0);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.tab-btn.active::after,
-.tab-btn:hover::after {
-    transform: scaleX(1);
-}
+.send-btn:hover:not(:disabled) { filter: brightness(1.06) !important; }
 
 /* ════════════════════════════════════════════════════════════
-   SECTION 2 — ALL CARDS
+   SECTION 2 — CARDS
    ════════════════════════════════════════════════════════════ */
 
-/* ── Base Glass Card ─────────────────────────────────────── */
+/* Glass Card */
 .glass-card {
     position: relative;
     background: var(--lf-card-bg) !important;
     border: 1px solid var(--lf-card-border) !important;
     border-radius: var(--lf-card-radius) !important;
     box-shadow: var(--lf-card-shadow) !important;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    overflow: hidden;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow 0.25s ease,
-        border-color 0.25s ease !important;
-}
-
-.glass-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, var(--primary-bg), rgba(0, 221, 179, 0.6));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.28s ease;
-    pointer-events: none;
-}
-
-.glass-card:hover::before {
-    opacity: 1;
+    transition: box-shadow var(--dur-normal) ease, border-color var(--dur-normal) ease !important;
 }
 
 .glass-card:hover {
-    transform: translateY(-6px) scale(1.015) !important;
-    box-shadow: var(--lf-glow-purple), 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: var(--lf-glow-purple), 0 8px 24px rgba(0,0,0,0.12) !important;
     border-color: var(--primary-bg) !important;
 }
 
-/* ── Stat Card (UsersView, Overview) ─────────────────────── */
+/* Stat Card Premium */
+.stat-card-premium {
+    position: relative;
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: box-shadow var(--dur-normal) ease, border-color var(--dur-normal) ease, transform var(--dur-normal) ease;
+}
+
+.stat-card-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 0 0 1px var(--primary-bg);
+}
+
+.stat-icon-wrapper {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; position: relative; z-index: 2;
+    transition: transform var(--dur-normal) var(--ease-spring);
+}
+.stat-icon-wrapper::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: 14px; background: currentcolor;
+    opacity: 0.12; transition: opacity var(--dur-normal) ease;
+}
+.stat-card-premium:hover .stat-icon-wrapper { transform: scale(1.08); }
+.stat-card-premium:hover .stat-icon-wrapper::before { opacity: 0.2; }
+
+.stat-content { display: flex; flex-direction: column; z-index: 2; }
+.stat-value {
+    font-size: 30px; font-weight: 800; color: var(--text-main);
+    line-height: 1.1; margin-bottom: 4px;
+}
+.stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.stat-card-premium.warning .stat-icon-wrapper { color: var(--lf-orange); }
+.stat-card-premium.primary .stat-icon-wrapper { color: var(--lf-purple); }
+.stat-card-premium.success .stat-icon-wrapper { color: var(--lf-teal); }
+.stat-card-premium.info    .stat-icon-wrapper { color: var(--lf-blue); }
+
+/* Stat Card (UsersView, Overview) */
 .stat-card {
     position: relative;
     border-radius: var(--lf-card-radius) !important;
     background: var(--lf-card-bg) !important;
     border: 1px solid var(--lf-card-border) !important;
     box-shadow: var(--lf-card-shadow) !important;
-    backdrop-filter: blur(16px);
-    overflow: hidden;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow 0.25s ease,
-        border-color 0.25s ease !important;
+    transition: box-shadow var(--dur-normal) ease, border-color var(--dur-normal) ease !important;
 }
-
-.stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--lf-grad-main);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
-}
-
-.stat-card:hover::after {
-    transform: scaleX(1);
-}
-
 .stat-card:hover {
-    transform: translateY(-5px) !important;
-    border-color: rgba(0, 221, 179, 0.28) !important;
-    box-shadow: var(--lf-glow-teal), 0 18px 46px rgba(0, 0, 0, 0.28) !important;
+    border-color: rgba(0, 221, 179, 0.25) !important;
+    box-shadow: var(--lf-glow-teal), 0 8px 24px rgba(0,0,0,0.12) !important;
 }
 
-/* ── Task Card (TaskCard.vue – Kanban) ───────────────────── */
+/* Task Card (Kanban) */
 .task-card {
     position: relative;
-    border-radius: 14px !important;
+    border-radius: 12px !important;
     background: var(--bg-card) !important;
     border: 1px solid var(--border-color) !important;
     box-shadow: var(--shadow-sm) !important;
-    backdrop-filter: blur(10px);
-    overflow: hidden;
-    transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow 0.24s ease,
-        border-color 0.24s ease !important;
+    transition: box-shadow var(--dur-normal) ease, border-color var(--dur-normal) ease !important;
 }
-
-.task-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: var(--lf-grad-main);
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 0.28s ease;
-}
-
-.task-card:hover::before {
-    transform: scaleY(1);
-}
-
 .task-card:hover {
-    transform: translateY(-5px) scale(1.02) !important;
     border-color: var(--primary-bg) !important;
-    box-shadow: var(--lf-glow-purple), 0 14px 34px rgba(0, 0, 0, 0.28) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
 }
 
-/* ── Issue Cards (IssuesView) ────────────────────────────── */
-.issue-card {
-    border-radius: 12px !important;
+/* Issue Cards */
+.issue-card, .issue-card-item {
+    border-radius: 10px !important;
     border: 1px solid transparent !important;
-    transition: background 0.2s ease,
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease !important;
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease !important;
     cursor: pointer;
 }
-
-.issue-card:hover {
+.issue-card:hover, .issue-card-item:hover {
     background: var(--primary-bg) !important;
     border-color: var(--primary-bg) !important;
-    transform: translateX(5px) !important;
-    box-shadow: -4px 0 0 var(--lf-purple) !important;
 }
 
-/* Also target the issue-card-item class */
-.issue-card-item {
-    border-radius: 12px !important;
-    border: 1px solid transparent !important;
-    transition: background 0.2s ease,
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease !important;
-}
-
-.issue-card-item:hover {
-    background: var(--primary-bg) !important;
-    border-color: var(--primary-bg) !important;
-    transform: translateX(5px) !important;
-    box-shadow: -4px 0 0 var(--lf-purple) !important;
-}
-
-/* ── Notification Items ──────────────────────────────────── */
+/* Notification Items */
 .notification-item {
-    border-radius: 12px !important;
-    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+    border-radius: 10px !important;
+    transition: background var(--dur-fast) ease !important;
 }
+.notification-item:hover { background: var(--primary-bg) !important; }
 
-.notification-item:hover {
-    background: var(--lf-purple-dim) !important;
-    transform: translateX(4px) !important;
-    box-shadow: -3px 0 0 var(--lf-purple) !important;
-}
-
-/* ── Kanban Column ────────────────────────────────────────── */
+/* Kanban Column */
 .kanban-column {
-    border-radius: 18px !important;
+    border-radius: 16px !important;
     background: var(--bg-surface) !important;
     border: 1px solid var(--border-color) !important;
-    backdrop-filter: blur(14px);
-    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+    transition: border-color var(--dur-normal) ease !important;
 }
+.kanban-column:hover { border-color: var(--primary-bg) !important; }
 
-.kanban-column:hover {
-    border-color: rgba(0, 221, 179, 0.22) !important;
-    box-shadow: 0 0 30px rgba(0, 221, 179, 0.08) !important;
-}
-
-/* ── Project Card (ProjectList.vue) ──────────────────────── */
+/* Project Card */
 .project-card {
     position: relative;
     border-radius: var(--lf-card-radius) !important;
     background: var(--lf-card-bg) !important;
     border: 1px solid var(--lf-card-border) !important;
     box-shadow: var(--lf-card-shadow) !important;
-    backdrop-filter: blur(16px);
-    overflow: hidden;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-        box-shadow 0.25s ease,
-        border-color 0.25s ease !important;
+    transition: box-shadow var(--dur-normal) ease, border-color var(--dur-normal) ease !important;
 }
-
-.project-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--lf-grad-blue);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
-}
-
-.project-card:hover::after {
-    transform: scaleX(1);
-}
-
 .project-card:hover {
-    transform: translateY(-6px) !important;
-    border-color: rgba(74, 144, 245, 0.35) !important;
-    box-shadow: var(--lf-glow-purple), 0 20px 48px rgba(0, 0, 0, 0.3) !important;
+    border-color: var(--primary-bg) !important;
+    box-shadow: var(--lf-glow-purple), 0 8px 24px rgba(0,0,0,0.12) !important;
 }
 
-/* ── Modal Window ─────────────────────────────────────────── */
+/* Modal Window */
 .modal-window {
     border-radius: var(--lf-card-radius) !important;
     background: var(--bg-surface) !important;
     border: 1px solid var(--border-color) !important;
-    backdrop-filter: blur(28px);
-    box-shadow: var(--shadow-lg), var(--lf-glow-purple) !important;
-    animation: lf-modal-in 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-lg) !important;
+    animation: lf-modal-in var(--dur-slow) var(--ease-spring) both;
 }
 
 @keyframes lf-modal-in {
-    from {
-        opacity: 0;
-        transform: scale(0.88) translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.95) translateY(16px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0);     }
 }
 
-.modal-backdrop {
-    animation: lf-fade-in 0.22s ease both;
-}
+.modal-backdrop { animation: lf-fade-in var(--dur-normal) ease both; }
 
-/* ── Dropdown / Popover ───────────────────────────────────── */
+/* Dropdown / Popover */
 .assignee-selection-modal,
 .popover-list,
 .notification-menu,
 .project-menu {
-    border-radius: 14px !important;
+    border-radius: 12px !important;
     background: var(--glass-bg) !important;
     border: 1px solid var(--border-color) !important;
-    backdrop-filter: blur(22px);
+    backdrop-filter: blur(16px);
     box-shadow: var(--shadow-lg) !important;
-    animation: lf-dropdown-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: lf-dropdown-in var(--dur-normal) var(--ease-out) both;
 }
 
 @keyframes lf-dropdown-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px) scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
 /* ════════════════════════════════════════════════════════════
-   SECTION 3 — PAGE ENTRANCE ANIMATIONS
+   SECTION 3 — PAGE ENTRANCE (بسيطة)
    ════════════════════════════════════════════════════════════ */
 
-.issues-view,
-.kanban-board,
-.project-chat,
-.settings-view,
-.users-view,
-.permissions-view,
-.projects-view,
-.backlog-view,
-.overview-view,
-.reports-view,
-.notifications-view {
-    animation: lf-page-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+.issues-view, .kanban-board, .project-chat,
+.settings-view, .users-view, .permissions-view,
+.projects-view, .backlog-view, .overview-view,
+.reports-view, .notifications-view {
+    animation: lf-page-in var(--dur-slow) var(--ease-out) both;
 }
 
 @keyframes lf-page-in {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* Staggered issue rows */
+/* العناصر المتدرجة — بشكل موحّد بدون nth-child */
+@keyframes lf-item-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
 .issues-list .issue-card,
 .issues-list .issue-card-item {
-    animation: lf-item-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: lf-item-in var(--dur-normal) var(--ease-out) both;
 }
 
-.issues-list .issue-card:nth-child(1),
-.issues-list .issue-card-item:nth-child(1) {
-    animation-delay: 0.05s;
-}
-
-.issues-list .issue-card:nth-child(2),
-.issues-list .issue-card-item:nth-child(2) {
-    animation-delay: 0.10s;
-}
-
-.issues-list .issue-card:nth-child(3),
-.issues-list .issue-card-item:nth-child(3) {
-    animation-delay: 0.15s;
-}
-
-.issues-list .issue-card:nth-child(4),
-.issues-list .issue-card-item:nth-child(4) {
-    animation-delay: 0.20s;
-}
-
-.issues-list .issue-card:nth-child(5),
-.issues-list .issue-card-item:nth-child(5) {
-    animation-delay: 0.24s;
-}
-
-.issues-list .issue-card:nth-child(n+6),
-.issues-list .issue-card-item:nth-child(n+6) {
-    animation-delay: 0.28s;
-}
-
-/* Staggered kanban columns */
-.kanban-column {
-    animation: lf-item-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.kanban-column:nth-child(1) {
-    animation-delay: 0.05s;
-}
-
-.kanban-column:nth-child(2) {
-    animation-delay: 0.11s;
-}
-
-.kanban-column:nth-child(3) {
-    animation-delay: 0.17s;
-}
-
-.kanban-column:nth-child(4) {
-    animation-delay: 0.23s;
-}
-
-.kanban-column:nth-child(n+5) {
-    animation-delay: 0.29s;
-}
-
-/* Staggered stat cards */
-.stat-card {
-    animation: lf-item-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.stat-card:nth-child(1) {
-    animation-delay: 0.06s;
-}
-
-.stat-card:nth-child(2) {
-    animation-delay: 0.12s;
-}
-
-.stat-card:nth-child(3) {
-    animation-delay: 0.18s;
-}
-
-.stat-card:nth-child(n+4) {
-    animation-delay: 0.24s;
-}
-
-@keyframes lf-item-in {
-    from {
-        opacity: 0;
-        transform: translateY(16px) scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Message bubbles in chat */
-.message-wrapper {
-    animation: lf-item-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+.kanban-column  { animation: lf-item-in 0.3s var(--ease-out) both; }
+.stat-card      { animation: lf-item-in 0.3s var(--ease-out) both; }
+.message-wrapper { animation: lf-item-in 0.2s var(--ease-out) both; }
 
 /* ════════════════════════════════════════════════════════════
    SECTION 4 — NAVIGATION
@@ -872,230 +400,146 @@ button,
 .nav-item {
     position: relative;
     overflow: hidden;
-    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease !important;
-}
-
-.nav-item:hover {
-    transform: translateX(3px) !important;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease !important;
 }
 
 /* ════════════════════════════════════════════════════════════
    SECTION 5 — FORM INPUTS
    ════════════════════════════════════════════════════════════ */
 
-input,
-textarea,
-select {
-    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+input, textarea, select {
+    transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease !important;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+input:focus, textarea:focus, select:focus {
     outline: none !important;
     border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px var(--primary-bg),
-        0 0 0 1px var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-bg) !important;
 }
 
 /* ════════════════════════════════════════════════════════════
    SECTION 6 — BADGES & TOASTS
    ════════════════════════════════════════════════════════════ */
 
-.badge-red,
-.tab-count {
-    animation: lf-pulse 2.6s ease-in-out infinite;
+/* نبضة هادئة للبادج الحمراء */
+.badge-red, .tab-count {
+    animation: lf-pulse 3s ease-in-out infinite;
 }
 
 @keyframes lf-pulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 86, 48, 0.6);
-    }
-
-    50% {
-        box-shadow: 0 0 0 7px rgba(255, 86, 48, 0);
-    }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    60%       { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
 }
 
+/* Toast */
 .toast {
-    border-radius: 12px !important;
-    backdrop-filter: blur(18px);
+    border-radius: 10px !important;
+    backdrop-filter: blur(12px);
     background: var(--glass-bg) !important;
     border: 1px solid var(--border-color) !important;
-    animation: lf-toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation: lf-toast-in var(--dur-slow) var(--ease-spring) both;
 }
 
 @keyframes lf-toast-in {
-    from {
-        opacity: 0;
-        transform: translateX(90px) scale(0.9);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0);    }
 }
 
+/* Tab buttons */
+.tab-btn {
+    position: relative;
+    transition: color var(--dur-fast) ease, background var(--dur-fast) ease !important;
+}
+
+.tab-btn::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 2px;
+    background: var(--lf-grad-main);
+    transform: scaleX(0);
+    transition: transform var(--dur-normal) ease;
+}
+
+.tab-btn.active::after, .tab-btn:hover::after { transform: scaleX(1); }
+
 /* ════════════════════════════════════════════════════════════
-   SECTION 7 — LOTTIE STATES & OVERLAYS
+   SECTION 7 — LOTTIE STATES
    ════════════════════════════════════════════════════════════ */
 
 .lottie-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2.5rem 1rem;
-    text-align: center;
-    gap: 0.75rem;
-    animation: lf-page-in 0.4s ease;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 2.5rem 1rem;
+    text-align: center; gap: 0.75rem;
+    animation: lf-page-in var(--dur-slow) ease both;
+}
+.lottie-empty-state h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin: 0; }
+.lottie-empty-state p  { font-size: 0.875rem; color: var(--text-muted); margin: 0; }
+
+.lottie-loading, .lottie-issues-loading {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 200px;
+    animation: lf-page-in 0.25s ease both;
 }
 
-.lottie-empty-state h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-main);
-    margin: 0;
-}
-
-.lottie-empty-state p {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    margin: 0;
-}
-
-.lottie-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
-    animation: lf-page-in 0.3s ease;
-}
-
-.lottie-issues-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 1rem;
-    gap: 1rem;
-    animation: lf-page-in 0.3s ease;
-}
-
-.lottie-issues-loading p {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin: 0;
-}
+.lottie-issues-loading { padding: 4rem 1rem; min-height: auto; gap: 1rem; }
+.lottie-issues-loading p { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; margin: 0; }
 
 .lottie-page-loading-overlay {
-    position: fixed;
-    bottom: 84px;
-    right: 24px;
-    z-index: 8000;
-    background: rgba(12, 12, 28, 0.94) !important;
-    border: 1px solid rgba(0, 221, 179, 0.35) !important;
-    border-radius: 18px;
-    padding: 1.1rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: var(--lf-glow-teal), 0 12px 32px rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(18px);
-    min-width: 140px;
-    animation: lf-page-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    position: fixed; bottom: 84px; right: 24px; z-index: 8000;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px; padding: 1rem 1.25rem;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.5rem; box-shadow: var(--shadow-md);
+    backdrop-filter: blur(12px); min-width: 140px;
+    animation: lf-page-in var(--dur-normal) ease both;
 }
 
 .lottie-celebrate-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-    pointer-events: none;
-    animation: lf-celebrate-in 0.2s ease,
-        lf-celebrate-out 0.4s ease 1.2s forwards;
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); z-index: 9999; pointer-events: none;
+    animation: lf-celebrate-in 0.2s ease, lf-celebrate-out 0.35s ease 1.2s forwards;
 }
 
 @keyframes lf-celebrate-in {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.7);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.75); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1);    }
 }
-
 @keyframes lf-celebrate-out {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(1.2);
-    }
+    from { opacity: 1; }
+    to   { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
 }
 
 /* ════════════════════════════════════════════════════════════
    SECTION 8 — VUE TRANSITIONS
    ════════════════════════════════════════════════════════════ */
 
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.25s ease, transform 0.25s ease;
+.fade-enter-active, .fade-leave-active {
+    transition: opacity var(--dur-normal) ease, transform var(--dur-normal) ease;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0; transform: translateY(6px);
 }
 
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-    transform: translateY(8px);
+.fade-slide-enter-active, .fade-slide-leave-active {
+    transition: opacity var(--dur-normal) ease, transform var(--dur-normal) ease;
 }
-
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-    transition: opacity 0.28s ease, transform 0.28s ease;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-    opacity: 0;
-    transform: translateX(-12px);
+.fade-slide-enter-from, .fade-slide-leave-to {
+    opacity: 0; transform: translateX(-10px);
 }
 
 /* ════════════════════════════════════════════════════════════
-   UTILITY — Helpers
+   SECTION 9 — UTILITIES
    ════════════════════════════════════════════════════════════ */
 
-/* Generic fade-in utility */
 @keyframes lf-fade-in {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* Shimmer skeleton */
 @keyframes lf-shimmer {
-    0% {
-        background-position: -800px 0;
-    }
-
-    100% {
-        background-position: 800px 0;
-    }
+    0%   { background-position: -800px 0; }
+    100% { background-position:  800px 0; }
 }
 
 .skeleton {
@@ -1105,30 +549,26 @@ select:focus {
     border-radius: 6px;
 }
 
-/* ── Login & Signup pages ─────────────────────────────────── */
-.auth-card,
-.login-card,
-.signup-card {
-    border-radius: 24px !important;
+/* Rotation utility */
+@keyframes lf-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.anim-rotate.trigger-infinite { animation: lf-rotate 1s linear infinite; }
+
+/* ── Auth pages ─────────────────────────────────────────── */
+.auth-card, .login-card, .signup-card {
+    border-radius: 20px !important;
     background: var(--lf-card-bg) !important;
     border: 1px solid var(--lf-card-border) !important;
-    backdrop-filter: blur(24px);
-    box-shadow: var(--lf-glow-purple), 0 24px 60px rgba(0, 0, 0, 0.4) !important;
-    animation: lf-modal-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-lg) !important;
+    animation: lf-modal-in var(--dur-slow) var(--ease-spring) both;
 }
 
-/* ── Backlog Sprint / Task Rows ──────────────────────────── */
-.sprint-header,
-.sprint-card,
-.backlog-task-row,
-.task-row-item {
-    border-radius: 10px !important;
-    transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease !important;
+/* ── Backlog rows ────────────────────────────────────────── */
+.sprint-header, .sprint-card, .backlog-task-row, .task-row-item {
+    border-radius: 8px !important;
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease !important;
 }
-
-.backlog-task-row:hover,
-.task-row-item:hover {
-    background: var(--lf-purple-dim) !important;
-    transform: translateX(4px) !important;
-    box-shadow: -3px 0 0 var(--lf-purple) !important;
+.backlog-task-row:hover, .task-row-item:hover {
+    background: var(--primary-bg) !important;
+    border-color: var(--primary-bg) !important;
 }

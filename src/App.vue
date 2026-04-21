@@ -2,9 +2,11 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useToast } from '@/composables/useToast';
 
 const { locale } = useI18n();
 const router = useRouter();
+const { toasts } = useToast();
 
 // ── Global 403 Permission Denied Toast ────────────────────────────────
 const permDeniedMsg = ref('');
@@ -24,10 +26,6 @@ const checkSession = () => {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
     if (isAuthenticated) {
         const expiryTime = localStorage.getItem('session_expiry_time');
-        
-        // Debug info in console
-        const timeLeft = expiryTime ? (parseInt(expiryTime, 10) - Date.now()) : 0;
-        console.log(`[Auth Check] Session expires in: ${Math.round(timeLeft / 1000)} seconds.`);
         
         if (expiryTime && Date.now() > parseInt(expiryTime, 10)) {
             // Session expired, clear storage
@@ -120,7 +118,6 @@ const applyTheme = (theme) => {
 };
 
 watch(locale, (newLang) => {
-  console.log('Language changed to:', newLang);
   updateDirection(newLang);
   localStorage.setItem('user_language', newLang);
 });
@@ -168,6 +165,10 @@ onMounted(() => {
   window.addEventListener('color-changed',  (e) => applyColor(e.detail));
   window.addEventListener('font-changed',   (e) => applyFont(e.detail));
   window.addEventListener('permission-denied', handlePermDenied);
+  window.addEventListener('app-toast', (e) => {
+    const { message, type } = e.detail || {};
+    if (message) showToast(message, type || 'success');
+  });
 
   sessionCheckInterval = setInterval(checkSession, 5000);
 });
@@ -190,6 +191,20 @@ onUnmounted(() => {
           <span>{{ permDeniedMsg }}</span>
         </div>
       </transition>
+    </Teleport>
+
+    <!-- Global Toast Notifications -->
+    <Teleport to="body">
+      <div class="global-toast-container">
+        <transition-group name="g-toast">
+          <div v-for="note in toasts" :key="note.id" class="g-toast" :class="`g-toast-${note.type}`">
+            <i class="fa-solid fa-check-circle" v-if="note.type === 'success'"></i>
+            <i class="fa-solid fa-circle-exclamation" v-else-if="note.type === 'error'"></i>
+            <i class="fa-solid fa-circle-info" v-else></i>
+            <span>{{ note.message }}</span>
+          </div>
+        </transition-group>
+      </div>
     </Teleport>
   </div>
 </template>
@@ -223,4 +238,25 @@ body {
 .global-perm-toast i { font-size: 1rem; }
 .perm-toast-enter-active, .perm-toast-leave-active { transition: all 0.3s ease; }
 .perm-toast-enter-from, .perm-toast-leave-to { opacity: 0; transform: translateX(-50%) translateY(20px); }
+
+/* Global Toast */
+.global-toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999998;
+  display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+}
+[dir="rtl"] .global-toast-container { right: auto; left: 24px; }
+.g-toast {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px; border-radius: 14px; min-width: 260px;
+  font-size: 0.9rem; font-weight: 700; color: white;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  font-family: 'Inter', 'Tajawal', sans-serif;
+}
+.g-toast-success { background: linear-gradient(135deg, #059669, #10b981); }
+.g-toast-error   { background: linear-gradient(135deg, #dc2626, #ef4444); }
+.g-toast-info    { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+.g-toast-enter-active { animation: gToastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.g-toast-leave-active { animation: gToastOut 0.3s cubic-bezier(0.4, 0, 1, 1); }
+@keyframes gToastIn  { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes gToastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(40px); } }
 </style>

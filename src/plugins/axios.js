@@ -40,8 +40,9 @@ axiosInstance.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          // Use full URL to ensure it hits the backend, not the frontend
-          const response = await axios.post(`${BASE_URL}/api/token/refresh/`, {
+          // Use a bare axios instance (no auth interceptor) to avoid infinite loop
+          const refreshAxios = axios.create({ baseURL: BASE_URL || '/' });
+          const response = await refreshAxios.post('/api/token/refresh/', {
             refresh: refreshToken,
           });
 

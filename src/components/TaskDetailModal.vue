@@ -2,9 +2,12 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import axios from '@/plugins/axios';
+import { useToast } from '@/composables/useToast';
 
 const { t } = useI18n();
+const { showToast } = useToast();
 
 const props = defineProps({
   task: Object,
@@ -69,8 +72,10 @@ const currentAssignee = computed(() => {
 });
 
 const renderedDescription = computed(() => {
-    return marked.parse(descriptionBuffer.value || `*${t('common.none')}*`);
+    return DOMPurify.sanitize(marked.parse(descriptionBuffer.value || `*${t('common.none')}*`));
 });
+
+const safeMarkdown = (content) => DOMPurify.sanitize(marked.parse(content || ''));
 
 const subtasks = computed(() => props.task?.subtasks || []);
 const attachments = computed(() => props.task?.attachments || []);
@@ -133,8 +138,9 @@ const getTaskCustomFieldValue = (fieldId) => {
 
 const updateCustomField = async (fieldId, newValue) => {
     const field = customFields.value.find(f => f.id === fieldId);
+    if (!field) return; // guard: field not found
     if (field.required && (!newValue || newValue.toString().trim() === '')) {
-        alert(`${field.name} ${t('common.is_required') || 'is required'}`);
+        showToast(`${field.name} ${t('common.is_required') || 'is required'}`, 'error');
         emit('update-task'); // Reset UI
         return;
     }
@@ -347,7 +353,7 @@ const handleStatusChange = async (newStatusId) => {
     } catch (e) {
         console.error("Error updating status", e);
         const errorMsg = e.response?.data?.error || t('kanban.messages.status_change_error');
-        alert(errorMsg);
+        showToast(errorMsg, 'error');
         emit('update-task');
     } finally {
         isUpdatingStatus.value = false;
@@ -598,9 +604,8 @@ const formatDate = (dateStr) => {
 };
 
 const activeProjectName = computed(() => {
-    if (!props.task?.project) return 'Project';
-    // This is a simplified version, ideally passed from parent or fetched
-    return 'Frontend App'; 
+    if (!props.task?.project_name) return props.task?.project ? `Project #${props.task.project}` : 'Project';
+    return props.task.project_name;
 });
 </script>
 
@@ -807,7 +812,7 @@ const activeProjectName = computed(() => {
                                             <i class="fa-solid fa-reply fa-xs"></i> {{ $t('kanban.reply') || 'Reply' }}
                                         </button>
                                     </div>
-                                    <div class="comment-body" v-html="marked.parse(comment.content)"></div>
+                                    <div class="comment-body" v-html="safeMarkdown(comment.content)"></div>
 
                                     <!-- Replies -->
                                     <div v-if="comment.replies && comment.replies.length" class="replies-list">
@@ -818,7 +823,7 @@ const activeProjectName = computed(() => {
                                                     <span class="author">{{ reply.author_name }}</span>
                                                     <span class="date">{{ formatDate(reply.created_at) }}</span>
                                                 </div>
-                                                <div class="comment-body" v-html="marked.parse(reply.content)"></div>
+                                                <div class="comment-body" v-html="safeMarkdown(reply.content)"></div>
                                             </div>
                                         </div>
                                     </div>

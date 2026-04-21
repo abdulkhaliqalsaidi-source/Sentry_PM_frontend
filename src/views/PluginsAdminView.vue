@@ -81,10 +81,11 @@
       </div>
 
       <!-- Cards Grid -->
-      <div v-else class="cards-grid">
-        <div
-          v-for="plugin in filtered"
-          :key="plugin.id"
+      <div v-else>
+        <div class="cards-grid">
+          <div
+            v-for="plugin in paginatedPlugins"
+            :key="plugin.id"
           class="plugin-card"
           :class="{ 'card-on': plugin.enabled, 'card-expanded': expanded === plugin.id }"
         >
@@ -168,6 +169,13 @@
             </div>
           </transition>
         </div>
+        </div>
+        <ElitePagination 
+          :totalItems="filtered.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+        />
       </div>
     </main>
 
@@ -244,9 +252,11 @@
 
 <script>
 import axios from '@/plugins/axios';
+import ElitePagination from '@/components/ElitePagination.vue';
 
 export default {
   name: 'PluginsAdminView',
+  components: { ElitePagination },
   data() {
     return {
       plugins: [], loadedPlugins: [],
@@ -256,6 +266,7 @@ export default {
       editingPlugin: null,
       copiedEntry: null,
       toasts: [], _toastId: 0,
+      currentPage: 1, itemsPerPage: 12,
       form: { name: '', version: '1.0.0', description: '', entry_point: '', enabled: false }
     };
   },
@@ -270,6 +281,15 @@ export default {
         p.entry_point.toLowerCase().includes(q) ||
         (p.description || '').toLowerCase().includes(q)
       );
+    },
+    paginatedPlugins() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.filtered.slice(start, start + this.itemsPerPage);
+    }
+  },
+  watch: {
+    search() {
+      this.currentPage = 1;
     }
   },
   mounted() { this.refresh(); },

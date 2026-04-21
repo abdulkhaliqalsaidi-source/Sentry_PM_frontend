@@ -8,11 +8,13 @@ import TaskRow from '../components/TaskRow.vue';
 import TaskDetailModal from '../components/TaskDetailModal.vue';
 import AnimatedIcon from '../components/AnimatedIcon.vue';
 import { usePermissions } from '@/composables/usePermissions';
+import { useToast } from '@/composables/useToast';
 
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
 const { canCreateTask, canViewReports, canViewMembers, canViewSettings, isSuperuser, canManageSprints, canManageEpics } = usePermissions();
+const { showToast } = useToast();
 const projectId = route.params.projectId;
 
 const plannedSprints = computed(() => {
@@ -372,7 +374,7 @@ const createTask = async () => {
     for (const field of customFields.value) {
         const val = newTask.value.custom_fields[field.id];
         if (field.required && (!val || val.toString().trim() === '')) {
-            alert(`${field.name} ${t('common.is_required') || 'is required'}`);
+            showToast(`${field.name} ${t('common.is_required') || 'is required'}`, 'error');
             return;
         }
     }
@@ -427,7 +429,7 @@ const createTask = async () => {
         setTimeout(() => { isSuccess.value = false; showCreateModal.value = false; }, 800);
     } catch (error) { 
         console.error(error); 
-        alert(t('common.error_occurred') || 'An error occurred.');
+        showToast(t('common.error_occurred') || 'An error occurred.', 'error');
     } finally { loadingSave.value = false; }
 };
 
@@ -533,7 +535,7 @@ watch(showCompletedSprints, () => fetchData());
                         </div>
                     </div>
                     <draggable v-if="sprintsTasks[sprint.id]" v-model="sprintsTasks[sprint.id]" :group="canManageBacklog ? 'tasks' : { name: 'tasks', put: false }" item-key="id" animation="300" class="island-tasks-area" @change="(e) => onDragChange(e, sprint.id)" ghost-class="ghost-task-elite" :disabled="!canManageBacklog" handle=".drag-handle-v">
-                        <template #item="{ element }"><TaskRow v-show="!activeEpicFilter || element.epic === activeEpicFilter" :task="element" @click="openTaskModal(element)" /></template>
+                        <template #item="{ element }"><TaskRow v-if="!activeEpicFilter || element.epic === activeEpicFilter" :task="element" @click="openTaskModal(element)" /></template>
                     </draggable>
                 </section>
 
@@ -542,7 +544,7 @@ watch(showCompletedSprints, () => fetchData());
                         <div class="island-info"><h3>{{ $t('kanban.backlog') }}</h3><span class="task-count-elite">{{ filteredBacklogTasks.length }} {{ $t('kanban.tasks') }}</span></div>
                     </div>
                     <draggable v-model="backlogTasks" :group="canManageBacklog ? 'tasks' : { name: 'tasks', pull: false, put: false }" item-key="id" animation="300" class="island-tasks-area" @change="(e) => onDragChange(e, null)" ghost-class="ghost-task-elite" :disabled="!canManageBacklog" handle=".drag-handle-v">
-                        <template #item="{ element }"><TaskRow v-show="!activeEpicFilter || element.epic === activeEpicFilter" :task="element" @click="openTaskModal(element)" /></template>
+                        <template #item="{ element }"><TaskRow v-if="!activeEpicFilter || element.epic === activeEpicFilter" :task="element" @click="openTaskModal(element)" /></template>
                     </draggable>
                 </section>
             </div>

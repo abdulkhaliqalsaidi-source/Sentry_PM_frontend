@@ -675,7 +675,6 @@ export default {
       this.error = null;
       try {
         const response = await axios.get('/api/profile/');
-        console.log('Profile API Response:', response.data);
         const userData = response.data.user;
         this.allProjects = response.data.all_projects || [];
         

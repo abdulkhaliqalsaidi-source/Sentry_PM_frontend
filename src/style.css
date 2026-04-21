@@ -78,7 +78,7 @@ table {
     --n20: #f1f5f9;
     --n30: #e2e8f0;
     --n40: #cbd5e1;
-    --n100: #64748b;
+    --n100: #5e6c84;
     --n800: #0f172a;
 
     --bg-body: radial-gradient(circle at top right, #f8fafc, #eff6ff);
@@ -94,10 +94,10 @@ table {
     --border-color: rgba(15, 23, 42, 0.08);
     --border-sidebar: rgba(15, 23, 42, 0.05);
 
-    /* Glass Tokens - Premium 40px Blur */
+    /* Glass Tokens */
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-blur: blur(40px);
+    --glass-blur: blur(16px);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 
     /* Shadows - More natural */
@@ -109,6 +109,26 @@ table {
     --radius-md: 12px;
     --radius-lg: 18px;
     --radius-xl: 24px;
+
+    /* Semantic colours — Light Mode */
+    --danger:     #ef4444;
+    --success:    #22c55e;
+    --warning:    #f59e0b;
+    --danger-bg:  rgba(239, 68, 68, 0.08);
+    --success-bg: rgba(34, 197, 94, 0.08);
+    --warning-bg: rgba(245, 158, 11, 0.08);
+
+    /* Slate palette — used by scrollbars, tables, misc UI */
+    --slate-50:  #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
 
     --transform-hover: translateY(-2px) scale(1.01);
 
@@ -130,6 +150,30 @@ table {
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    /* ── Semantic Colors (مفقودة سابقاً) ── */
+    --danger:      #ef4444;
+    --danger-bg:   rgba(239, 68, 68, 0.08);
+    --success:     #10b981;
+    --success-bg:  rgba(16, 185, 129, 0.08);
+    --warning:     #f59e0b;
+    --warning-bg:  rgba(245, 158, 11, 0.08);
+
+    /* ── Slate Scale (Tailwind fallback) ── */
+    --slate-50:  #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+
+    /* ── Toggle (Light Mode) ── */
+    --bg-toggle:    #e2e8f0;
+    --bg-indicator: #94a3b8;
 }
 
 /* Jira Dark Mode Palette */
@@ -147,7 +191,6 @@ table {
     /* Dark Muted Text */
     --n800: #B3B9C4;
     /* Dark Main Text */
-
     --ds-blue: #579DFF;
     --ds-blue-hover: #85B8FF;
     --ds-blue-light: rgba(87, 157, 255, 0.15);
@@ -190,6 +233,23 @@ table {
     --danger-bg: rgba(239, 68, 68, 0.2);
     --success-bg: rgba(34, 197, 94, 0.2);
     --warning-bg: rgba(245, 158, 11, 0.2);
+
+    /* Slate overrides for dark mode */
+    --slate-50:  #1e293b;
+    --slate-100: #1e293b;
+    --slate-200: #334155;
+    --slate-300: #475569;
+    --slate-400: #64748b;
+    --slate-500: #94a3b8;
+    --slate-600: #cbd5e1;
+    --slate-700: #e2e8f0;
+    --slate-800: #f1f5f9;
+    --slate-900: #f8fafc;
+
+    /* Semantic colours — Dark Mode */
+    --danger:  #f87168;
+    --success: #4bce97;
+    --warning: #f5cd47;
 
     --glass-bg: rgba(15, 23, 42, 0.6);
     --glass-border: rgba(255, 255, 255, 0.1);
@@ -1101,7 +1161,7 @@ button:disabled {
     padding: 32px; display: flex; align-items: center; gap: 20px;
     border-bottom: 1px solid var(--border-color);
 }
-.modal-header-elite h3 { font-size: 1.5rem; font-weight: 950; margin: 0; color: var(--text-main); letter-spacing: -0.02em; }
+.modal-header-elite h3 { font-size: 1.5rem; font-weight: 900; margin: 0; color: var(--text-main); letter-spacing: -0.02em; }
 .modal-icon-orb {
     width: 48px; height: 48px; border-radius: 16px;
     display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
@@ -1151,7 +1211,7 @@ button:disabled {
 
 /* 2. Elite Forms & Inputs */
 .elite-input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.elite-input-group label { font-size: 0.75rem; font-weight: 950; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding-left: 4px; }
+.elite-input-group label { font-size: 0.75rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding-left: 4px; }
 
 .elite-input-field, .elite-select-field, .elite-input-field-multi {
     width: 100%; border-radius: 16px; background: var(--bg-body);
@@ -1265,7 +1325,7 @@ button:disabled {
 .elite-table-cell.actions { justify-content: flex-end; gap: 8px; }
 [dir="rtl"] .elite-table-cell.actions { justify-content: flex-start; }
 
-.elite-table-cell .main-text { font-weight: 850; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.elite-table-cell .main-text { font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .elite-table-cell .sub-text { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; opacity: 0.8; }
 
 .elite-table-cell-icon {
@@ -1318,14 +1378,14 @@ button:disabled {
 .automation-step-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
 
 .step-badge {
-    position: absolute; top: 16px; right: 20px; font-size: 2.5rem; font-weight: 950;
+    position: absolute; top: 16px; right: 20px; font-size: 2.5rem; font-weight: 900;
     opacity: 0.04; font-family: var(--font-poppins); filter: grayscale(1);
     pointer-events: none;
 }
 [dir="rtl"] .step-badge { right: auto; left: 20px; }
 
 .step-label {
-    padding: 24px 28px 10px; font-size: 0.75rem; font-weight: 950;
+    padding: 24px 28px 10px; font-size: 0.75rem; font-weight: 900;
     text-transform: uppercase; letter-spacing: 0.15em; display: flex; align-items: center;
 }
 .step-label.emerald { color: #10b981; }
@@ -1353,7 +1413,7 @@ button:disabled {
 [data-theme="dark"] .island-icon { background: var(--n20); border: 1px solid var(--border-color); }
 
 .island-text { display: flex; flex-direction: column; }
-.island-text .title { font-weight: 850; color: var(--text-main); font-size: 0.95rem; }
+.island-text .title { font-weight: 800; color: var(--text-main); font-size: 0.95rem; }
 .island-text .desc { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
 /* Modal Micro-Transitions */
@@ -1384,4 +1444,69 @@ button:disabled {
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--primary);
+}
+
+/* ==========================================================================
+   ELITE PAGINATION
+   ========================================================================== */
+.elite-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 12px;
+}
+
+.elite-page-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elite-page-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-bg);
+    transform: translateY(-2px);
+}
+
+.elite-page-btn.active {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.elite-page-btn.ellipsis {
+    background: transparent;
+    border: none;
+    cursor: default;
+    color: var(--text-muted);
+}
+
+.elite-page-btn.nav-btn {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+.elite-page-btn.nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.elite-page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }

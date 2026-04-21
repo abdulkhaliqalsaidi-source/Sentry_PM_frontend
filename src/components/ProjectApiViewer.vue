@@ -139,8 +139,10 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import axios from '@/plugins/axios';
 import { useI18n } from 'vue-i18n';
+import { useToast } from '@/composables/useToast';
 
 const { t } = useI18n();
+const { showToast } = useToast();
 
 const props = defineProps({
   projectId: {
@@ -243,7 +245,7 @@ const deleteApi = async (api) => {
     apis.value = apis.value.filter(a => a.id !== api.id);
   } catch (error) {
     console.error("Error deleting API:", error);
-    alert(t('api_viewer.delete_error'));
+    showToast(t('api_viewer.delete_error'), 'error');
   }
 };
 

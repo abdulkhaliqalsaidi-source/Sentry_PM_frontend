@@ -62,7 +62,8 @@
         </div>
 
         <!-- Fields Table -->
-        <div v-else-if="!loading" class="elite-table-panel max-w-7xl mx-auto" :style="{ '--grid-cols': '80px 1.5fr 1fr 120px 1.5fr 80px' }">
+        <div v-else-if="!loading">
+        <div class="elite-table-panel max-w-7xl mx-auto" :style="{ '--grid-cols': '80px 1.5fr 1fr 120px 1.5fr 80px' }">
           <div class="elite-table-header">
             <span class="text-center"></span>
             <span>{{ $t('customFields.name') }}</span>
@@ -72,7 +73,7 @@
             <span class="text-center">{{ $t('common.actions') }}</span>
           </div>
 
-          <div v-for="field in fields" :key="field.id" class="elite-table-row animate-slide-in">
+          <div v-for="field in paginatedFields" :key="field.id" class="elite-table-row animate-slide-in">
             <!-- Icon Col -->
             <div class="elite-table-cell justify-center">
               <div class="elite-table-cell-icon primary">
@@ -114,6 +115,13 @@
               </button>
             </div>
           </div>
+        </div>
+        <ElitePagination 
+          :totalItems="fields.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+        />
         </div>
 
         <!-- Skeleton Loader -->
@@ -364,12 +372,13 @@
 <script>
 import axios from '@/plugins/axios';
 import AnimatedIcon from '@/components/AnimatedIcon.vue';
+import ElitePagination from '@/components/ElitePagination.vue';
 import draggable from 'vuedraggable';
 
 export default {
   name: 'CustomFieldsConfigView',
   props: ['projectId'],
-  components: { AnimatedIcon, draggable },
+  components: { AnimatedIcon, draggable, ElitePagination },
   data() {
     return {
       projectDetails: null,
@@ -379,11 +388,18 @@ export default {
       loadingSave: false,
       activeTab: 'fields',
       showAddModal: false,
+      currentPage: 1, itemsPerPage: 10,
       showEditModal: false,
       showStatusModal: false,
       editingStatus: { id: null, name: '', category: 'TO_DO', color: '#64748B' },
       editField: { id: null, name: '', field_type: 'TEXT', required: false, optionsStr: '' },
       newField: { name: '', field_type: 'TEXT', required: false, optionsStr: '' }
+    }
+  },
+  computed: {
+    paginatedFields() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.fields.slice(start, start + this.itemsPerPage);
     }
   },
   mounted() {

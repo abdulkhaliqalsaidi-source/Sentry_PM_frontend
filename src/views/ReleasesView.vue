@@ -44,7 +44,8 @@
         </div>
 
         <!-- Versions Table -->
-        <div v-else-if="!loading" class="elite-table-panel max-w-7xl mx-auto" :style="{ '--grid-cols': '1.5fr 140px 140px 140px 1.5fr 180px' }">
+        <div v-else-if="!loading">
+        <div class="elite-table-panel max-w-7xl mx-auto" :style="{ '--grid-cols': '1.5fr 140px 140px 140px 1.5fr 180px' }">
           <div class="elite-table-header">
             <span>{{ $t('releases.name') }}</span>
             <span class="text-center">{{ $t('common.status') }}</span>
@@ -54,7 +55,7 @@
             <span class="text-center">{{ $t('common.actions') }}</span>
           </div>
 
-          <div v-for="version in versions" :key="version.id" class="elite-table-row animate-slide-in">
+          <div v-for="version in paginatedVersions" :key="version.id" class="elite-table-row animate-slide-in">
             <!-- Name Col -->
             <div class="elite-table-cell">
               <div class="elite-table-cell-icon primary">
@@ -103,6 +104,13 @@
               </button>
             </div>
           </div>
+        </div>
+        <ElitePagination 
+          :totalItems="versions.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+        />
         </div>
 
         <!-- Skeleton Loader -->
@@ -182,12 +190,13 @@
 <script>
 import axios from '@/plugins/axios';
 import AnimatedIcon from '@/components/AnimatedIcon.vue';
+import ElitePagination from '@/components/ElitePagination.vue';
 import { usePermissions } from '@/composables/usePermissions';
 
 export default {
   name: 'ReleasesView',
   props: ['projectId'],
-  components: { AnimatedIcon },
+  components: { AnimatedIcon, ElitePagination },
   data() {
     const perms = usePermissions();
     return {
@@ -196,10 +205,17 @@ export default {
       loading: true,
       loadingSave: false,
       showAddModal: false,
+      currentPage: 1, itemsPerPage: 10,
       isEditing: false,
       editingVersionId: null,
       newVersion: { name: '', start_date: '', release_date: '', notes: '' },
       canManageReleases: perms.canManageReleases.value || perms.isSuperuser.value,
+    }
+  },
+  computed: {
+    paginatedVersions() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.versions.slice(start, start + this.itemsPerPage);
     }
   },
   mounted() {

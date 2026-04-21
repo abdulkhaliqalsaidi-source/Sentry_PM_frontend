@@ -702,7 +702,7 @@ onMounted(async () => {
 .header-text h1 {
   margin: 0;
   font-size: 2rem;
-  font-weight: 950;
+  font-weight: 900;
   color: var(--text-main);
   letter-spacing: -0.5px;
 }
@@ -1005,7 +1005,7 @@ onMounted(async () => {
 
 .panel-title { display: flex; align-items: center; gap: 15px; }
 .panel-title i { font-size: 24px; color: var(--primary); }
-.panel-title h2 { margin: 0; font-size: 1.4rem; font-weight: 950; color: var(--text-main); }
+.panel-title h2 { margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
 
 .leaderboard-rows {
   padding: 10px 20px;
@@ -1051,7 +1051,7 @@ onMounted(async () => {
 .medal-icon i.silver { color: #94a3b8; filter: drop-shadow(0 4px 8px rgba(148, 163, 184, 0.4)); }
 .medal-icon i.bronze { color: #b45309; filter: drop-shadow(0 4px 8px rgba(180, 83, 9, 0.4)); }
 
-.rank-num { font-weight: 950; font-size: 1.1rem; color: var(--text-muted); }
+.rank-num { font-weight: 900; font-size: 1.1rem; color: var(--text-muted); }
 
 /* User Profile */
 .user-profile { display: flex; align-items: center; gap: 15px; }
@@ -1215,7 +1215,7 @@ onMounted(async () => {
 .empty-state-premium h3 {
   margin: 0;
   font-size: 1.8rem;
-  font-weight: 950;
+  font-weight: 900;
   color: var(--text-main);
   letter-spacing: -0.5px;
 }
@@ -1312,7 +1312,7 @@ onMounted(async () => {
     50% { transform: scale(1.05); box-shadow: 0 0 20px 5px rgba(99,102,241,0.15); } 
 }
 
-.m-text h3 { margin: 0; font-size: 1.6rem; font-weight: 950; color: var(--text-main); letter-spacing: -0.8px; }
+.m-text h3 { margin: 0; font-size: 1.6rem; font-weight: 900; color: var(--text-main); letter-spacing: -0.8px; }
 .m-text p { margin: 4px 0 0 0; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; }
 
 .m-close-v {
@@ -1341,7 +1341,7 @@ onMounted(async () => {
     margin-bottom: 20px; display: flex; flex-direction: column; gap: 20px;
 }
 .kpi-head-v { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
-.k-title h4 { margin: 0; font-size: 1.1rem; font-weight: 950; color: var(--text-main); }
+.k-title h4 { margin: 0; font-size: 1.1rem; font-weight: 900; color: var(--text-main); }
 .k-title p { margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; line-height: 1.4; opacity: 0.8; }
 
 .k-score-v {

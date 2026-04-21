@@ -139,7 +139,7 @@ const getPriorityIcon = (priority) => {
 
 .task-key-v {
     font-size: 0.75rem;
-    font-weight: 850;
+    font-weight: 800;
     color: var(--text-muted);
     letter-spacing: 0.05em;
     min-width: 75px;

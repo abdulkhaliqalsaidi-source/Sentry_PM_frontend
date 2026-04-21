@@ -3,12 +3,21 @@ import { ref, onMounted, computed, watch } from 'vue';
 import axios from '@/plugins/axios';
 import { useI18n } from 'vue-i18n';
 import ConfirmModal from '../components/ConfirmModal.vue';
+import ElitePagination from '@/components/ElitePagination.vue';
 
 const { t } = useI18n();
 
 const notifications = ref([]);
 const loading = ref(true);
 const filter = ref('ALL'); // ALL, UNREAD, MENTIONS, ASSIGNED
+
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+
+const paginatedNotifications = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    return notifications.value.slice(start, start + itemsPerPage.value);
+});
 
 const currentUserId = computed(() => localStorage.getItem('user_id'));
 const username = computed(() => localStorage.getItem('username') || '');
@@ -118,6 +127,7 @@ const getIconForType = (type) => {
 };
 
 watch(filter, () => {
+    currentPage.value = 1;
     fetchNotifications();
 });
 
@@ -224,7 +234,7 @@ onMounted(() => {
         
         <transition-group name="staggered-premium" tag="div" v-else class="premium-notif-list">
           <div 
-            v-for="(notif, index) in notifications" 
+            v-for="(notif, index) in paginatedNotifications" 
             :key="notif.id"
             class="premium-notif-card glass-morphic"
             :class="{ 'is-unread': !notif.is_read }"
@@ -243,7 +253,7 @@ onMounted(() => {
             <div class="notif-body-premium">
               <div class="notif-main-text">
                 <span class="username">{{ notif.actor_username || t('common.system') }}</span>
-                <span class="verb">{{ t('notifications.verbs.' + notif.verb.replace(/ /g, '_')) }}</span>
+                <span class="verb">{{ notif.verb ? t('notifications.verbs.' + notif.verb.replace(/ /g, '_')) : '' }}</span>
                 <router-link 
                     v-if="notif.task_details" 
                     :to="{ name: 'ProjectBacklog', params: { projectId: notif.task_details.project_id }, query: { task: notif.task_details.id }}"
@@ -265,6 +275,13 @@ onMounted(() => {
             <div class="unread-glow" v-if="!notif.is_read"></div>
           </div>
         </transition-group>
+        <ElitePagination 
+          v-if="!loading && notifications.length > 0"
+          :totalItems="notifications.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+        />
       </main>
     </div>
 
@@ -687,7 +704,7 @@ onMounted(() => {
 
 .premium-empty-state-xl h3 {
   font-size: 2.8rem;
-  font-weight: 950;
+  font-weight: 900;
   color: var(--text-main);
   margin: 0 0 16px 0;
   letter-spacing: -0.04em;

@@ -526,7 +526,7 @@ onMounted(() => { fetchGroups(); });
   display: flex; flex-direction: column; align-items: center;
   box-shadow: 0 15px 35px var(--primary-glow);
 }
-.rights-num { font-size: 3.5rem; font-weight: 950; color: white; line-height: 1; }
+.rights-num { font-size: 3.5rem; font-weight: 900; color: white; line-height: 1; }
 .rights-lbl { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-top: 8px; letter-spacing: 0.1em; }
 
 /* Perm Grid */

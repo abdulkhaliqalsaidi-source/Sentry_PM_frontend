@@ -10,10 +10,12 @@ import CelebrationOverlay from './CelebrationOverlay.vue';
 import StateLoader from './StateLoader.vue';
 import StateEmpty from './StateEmpty.vue';
 import { usePermissions } from '@/composables/usePermissions';
+import { useToast } from '@/composables/useToast';
 
 const router = useRouter();
 const { t } = useI18n();
 const { canCreateTask } = usePermissions();
+const { showToast } = useToast();
 const props = defineProps(['projectId', 'projectName', 'permissions']);
 const emits = defineEmits(['view-error']);
 
@@ -99,7 +101,6 @@ const visibleColumns = computed(() => {
     return col.category === 'TO_DO' || col.category === 'IN_PROGRESS' || col.category === 'DONE';
   });
 
-  console.log('[visibleColumns] allColumns:', allColumns.value.map(c => c.category), '| filtered:', filtered.map(c => c.category));
   // Respect the order from the API
   return filtered;
 });
@@ -268,7 +269,7 @@ const updateTaskStatus = async (taskId, newStatusId, timeSpent = null) => {
   } catch (error) {
     console.error("Failed to update task status", error);
     const errorMsg = error.response?.data?.error || t('kanban.messages.failed_to_update_status');
-    alert(errorMsg);
+    showToast(errorMsg, 'error');
     fetchTasks(); // Reload to revert UI
     return false;
   }
@@ -474,7 +475,7 @@ const createTask = async () => {
     for (const field of customFields.value) {
         const val = newTask.value.custom_fields[field.id];
         if (field.required && (!val || val.toString().trim() === '')) {
-            alert(`${field.name} ${t('common.is_required') || 'is required'}`);
+            showToast(`${field.name} ${t('common.is_required') || 'is required'}`, 'error');
             return;
         }
     }
@@ -552,7 +553,7 @@ const createTask = async () => {
         }, 1000);
     } catch (error) {
         console.error("Failed to create task", error);
-        alert(t('common.error_occurred') || 'An error occurred while creating the task.');
+        showToast(t('common.error_occurred') || 'An error occurred while creating the task.', 'error');
     } finally { loadingSave.value = false; }
 };
 
@@ -1053,7 +1054,7 @@ const currentAssigningTask = computed(() => {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 20px; border-radius: 18px;
     background: var(--bg-card); color: var(--text-main);
-    border: 1px solid var(--border-color); font-weight: 850;
+    border: 1px solid var(--border-color); font-weight: 800;
     transition: 0.3s; cursor: pointer;
 }
 .btn-back-premium:hover { transform: translateX(-5px); border-color: var(--primary); background: var(--bg-hover); }
@@ -1062,7 +1063,7 @@ const currentAssigningTask = computed(() => {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 24px; border-radius: 18px;
     background: linear-gradient(135deg, var(--primary), var(--indigo-600));
-    color: white; border: none; font-weight: 850;
+    color: white; border: none; font-weight: 800;
     transition: 0.3s; cursor: pointer;
     box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
 }
@@ -1126,11 +1127,11 @@ const currentAssigningTask = computed(() => {
 }
 .h-main { display: flex; align-items: center; gap: 12px; }
 .status-indicator { width: 10px; height: 10px; border-radius: 50%; background: var(--col-color); box-shadow: 0 0 10px var(--col-color); }
-.col-title { margin: 0; font-size: 0.85rem; font-weight: 950; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
+.col-title { margin: 0; font-size: 0.85rem; font-weight: 900; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
 
 .count-pod {
     background: var(--bg-hover); padding: 4px 12px; border-radius: 12px;
-    font-size: 0.8rem; color: var(--text-muted); font-weight: 950;
+    font-size: 0.8rem; color: var(--text-muted); font-weight: 900;
     border: 1px solid var(--border-color);
 }
 .count-pod.urgent { background: var(--ds-red); color: white; border-color: var(--ds-red); animation: pulse-red 2s infinite; }
@@ -1168,7 +1169,7 @@ const currentAssigningTask = computed(() => {
 .filter-select {
     display: flex; align-items: center; gap: 10px; padding: 10px 18px;
     background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px;
-    cursor: pointer; transition: 0.3s; color: var(--text-main); font-weight: 850; font-size: 0.85rem;
+    cursor: pointer; transition: 0.3s; color: var(--text-main); font-weight: 800; font-size: 0.85rem;
 }
 .filter-select:hover { background: var(--bg-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
 .filter-select.is-open { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
@@ -1233,7 +1234,7 @@ const currentAssigningTask = computed(() => {
   border-radius: 12px;
   cursor: pointer;
   font-size: 0.8rem;
-  font-weight: 850;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1286,7 +1287,7 @@ const currentAssigningTask = computed(() => {
     padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; 
     border-bottom: 1px solid var(--border-color);
 }
-.am-title { display: flex; align-items: center; gap: 10px; font-weight: 950; font-size: 0.95rem; color: var(--text-main); }
+.am-title { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 0.95rem; color: var(--text-main); }
 .am-title i { color: var(--primary); font-size: 1.1rem; filter: drop-shadow(0 0 5px var(--primary-glow)); }
 .am-close { 
     background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 10px; cursor: pointer; transition: 0.2s; 
@@ -1315,7 +1316,7 @@ const currentAssigningTask = computed(() => {
 .am-avatar {
     width: 40px; height: 40px; border-radius: 12px;
     background: linear-gradient(135deg, var(--primary), var(--indigo-800));
-    color: white; font-weight: 950; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 900; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 .am-avatar--empty { background: var(--bg-hover); color: var(--text-muted); border: 1px dashed var(--border-color); box-shadow: none; }
@@ -1374,7 +1375,7 @@ const currentAssigningTask = computed(() => {
 .elite-input-group { margin-bottom: 25px; }
 .elite-input-group label {
     display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
-    font-size: 0.85rem; font-weight: 850; color: var(--text-muted);
+    font-size: 0.85rem; font-weight: 800; color: var(--text-muted);
 }
 .elite-input-group label i { color: var(--primary); opacity: 0.8; }
 
@@ -1402,13 +1403,13 @@ const currentAssigningTask = computed(() => {
 .btn-elite-glass {
     padding: 12px 24px; border-radius: 14px; background: var(--bg-card);
     border: 1px solid var(--border-color); color: var(--text-muted);
-    font-weight: 850; cursor: pointer; transition: 0.25s;
+    font-weight: 800; cursor: pointer; transition: 0.25s;
 }
 .btn-elite-glass:hover { background: var(--bg-hover); border-color: var(--primary); color: var(--text-main); }
 
 .btn-elite-solid {
     padding: 12px 24px; border-radius: 14px; border: none;
-    color: white; font-weight: 850; cursor: pointer; transition: 0.25s;
+    color: white; font-weight: 800; cursor: pointer; transition: 0.25s;
 }
 .btn-elite-solid.success { background: linear-gradient(135deg, var(--ds-green), #059669); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
 .btn-elite-solid.primary { background: linear-gradient(135deg, var(--primary), var(--indigo-800)); box-shadow: 0 5px 15px var(--primary-glow); }
@@ -1446,7 +1447,7 @@ const currentAssigningTask = computed(() => {
 
 .no-sprint-message h3 {
     font-size: 2.8rem;
-    font-weight: 950;
+    font-weight: 900;
     color: var(--text-main);
     margin: 24px 0 16px;
     letter-spacing: -0.04em;

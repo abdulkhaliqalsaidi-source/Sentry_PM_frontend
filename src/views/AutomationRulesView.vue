@@ -40,7 +40,8 @@
         </div>
 
         <!-- Rules Table -->
-        <div v-else-if="!loading" class="rules-table">
+        <div v-else-if="!loading">
+        <div class="rules-table">
           <div class="rules-header">
             <span class="col-toggle">{{ $t('common.active') }}</span>
             <span class="col-name">{{ $t('automation.name') }}</span>
@@ -50,7 +51,7 @@
             <span class="col-actions"></span>
           </div>
 
-          <div v-for="rule in rules" :key="rule.id" class="rule-row" :class="{ inactive: !rule.active }">
+          <div v-for="rule in paginatedRules" :key="rule.id" class="rule-row" :class="{ inactive: !rule.active }">
             <div class="col-toggle">
               <label class="premium-switch">
                 <input type="checkbox" v-model="rule.active" @change="toggleRule(rule)">
@@ -95,6 +96,13 @@
               </button>
             </div>
           </div>
+        </div>
+        <ElitePagination 
+          :totalItems="rules.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+        />
         </div>
 
         <!-- Skeleton -->
@@ -363,12 +371,13 @@
 <script>
 import axios from '@/plugins/axios';
 import AnimatedIcon from '@/components/AnimatedIcon.vue';
+import ElitePagination from '@/components/ElitePagination.vue';
 import { usePermissions } from '@/composables/usePermissions';
 
 export default {
   name: 'AutomationRulesView',
   props: ['projectId'],
-  components: { AnimatedIcon },
+  components: { AnimatedIcon, ElitePagination },
   data() {
     const perms = usePermissions();
     return {
@@ -377,6 +386,7 @@ export default {
       loading: true,
       loadingSave: false,
       showAddModal: false,
+      currentPage: 1, itemsPerPage: 10,
       showEditModal: false,
       editRule: {},
       projectStatuses: [],
@@ -387,6 +397,10 @@ export default {
     };
   },
   computed: {
+    paginatedRules() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.rules.slice(start, start + this.itemsPerPage);
+    },
     conditionValuePlaceholder() {
       const map = {
         'status.name': 'e.g. In Review',

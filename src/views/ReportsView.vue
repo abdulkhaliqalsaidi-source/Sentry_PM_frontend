@@ -874,7 +874,7 @@ const createdVsResolvedData = computed(() => {
 .sidebar-header { margin-bottom:32px; }
 .btn-back { display:flex; align-items:center; gap:8px; background:transparent; border:none; cursor:pointer; font-size:.95rem; font-weight:600; color:var(--text-muted); padding:8px 12px; border-radius:8px; transition:all .2s; }
 .btn-back:hover { background:var(--bg-hover); color:var(--text-main); }
-.sidebar-title { font-size:.85rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted); font-weight:850; margin:0 0 16px 12px; opacity:.7; }
+.sidebar-title { font-size:.85rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-muted); font-weight:800; margin:0 0 16px 12px; opacity:.7; }
 .nav-group-label { font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); padding:12px 12px 4px; font-weight:700; opacity:.7; }
 .nav-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:4px; }
 .nav-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; cursor:pointer; transition:all .2s; color:var(--text-main); font-weight:500; font-size:.95rem; }
@@ -906,7 +906,7 @@ const createdVsResolvedData = computed(() => {
 .ghost-pulse { animation:ghostFloat 3s ease-in-out infinite; }
 @keyframes ghostFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
 @keyframes slideUpFade { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-.btn-show-report-elite { background:var(--primary); color:white; border:none; padding:14px 32px; border-radius:16px; font-weight:850; font-size:1rem; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:12px; box-shadow:0 10px 25px -5px var(--primary-glow); }
+.btn-show-report-elite { background:var(--primary); color:white; border:none; padding:14px 32px; border-radius:16px; font-weight:800; font-size:1rem; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:12px; box-shadow:0 10px 25px -5px var(--primary-glow); }
 .btn-show-report-elite:hover { transform:translateY(-3px) scale(1.02); }
 .report-content-container { max-width:1200px; margin:0 auto; padding-bottom:40px; width:100%; }
 .kpi-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }

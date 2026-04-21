@@ -43,7 +43,7 @@
                     </button>
                 </div>
                 
-                <div v-for="(member, index) in projectRoles" 
+                <div v-for="(member, index) in paginatedRoles" 
                      :key="member.id" 
                      class="member-card-vibrant glass-panel-premium" 
                      :style="{ '--delay': Math.min(index * 0.08, 0.8) + 's' }">
@@ -89,6 +89,15 @@
                     <div class="card-glow-bg"></div>
                 </div>
             </transition-group>
+            
+            <ElitePagination 
+                v-if="!loading && projectRoles.length > 0"
+                :totalItems="projectRoles.length" 
+                :itemsPerPage="itemsPerPage" 
+                :currentPage="currentPage" 
+                @update:currentPage="p => currentPage = p" 
+                style="margin-top: 20px"
+            />
         </div>
 
         <!-- Add/Edit Member Modal (Vibrant Glass Styling) -->
@@ -171,15 +180,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ConfirmModal from '../components/ConfirmModal.vue';
 import axios from '@/plugins/axios';
 import { usePermissions } from '@/composables/usePermissions';
+import { useToast } from '@/composables/useToast';
+import ElitePagination from '@/components/ElitePagination.vue';
 
 const { t } = useI18n();
 const { canManageMembers, canViewMembers, isSuperuser } = usePermissions();
+const { showToast } = useToast();
 
 const API_BASE = '/api/pm';
 const AUTH_API = '/api/pm';
@@ -187,6 +199,9 @@ const AUTH_API = '/api/pm';
 const props = defineProps(['projectId']);
 const route = useRoute();
 const projectId = props.projectId || route.params.projectId;
+
+const currentPage = ref(1);
+const itemsPerPage = ref(12);
 
 const loading = ref(true);
 const projectRoles = ref([]);
@@ -202,6 +217,11 @@ const isSuccess = ref(false);
 const formData = ref({
     user: '',
     role: 'MEMBER'
+});
+
+const paginatedRoles = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    return projectRoles.value.slice(start, start + itemsPerPage.value);
 });
 
 const fetchProjectRoles = async () => {
@@ -273,7 +293,7 @@ const saveRole = async () => {
         }
     } catch (e) {
         console.error(e);
-        if (!editingRole.value) alert(t('members.add_error'));
+        if (!editingRole.value) showToast(t('members.add_error'), 'error');
     } finally { loadingSave.value = false; }
 };
 
@@ -375,7 +395,7 @@ const getRoleIcon = (role) => {
 .title-stack h1 {
     margin: 0 0 6px 0;
     font-size: 2rem;
-    font-weight: 850;
+    font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--text-main);
 }
@@ -620,7 +640,7 @@ const getRoleIcon = (role) => {
 
 .empty-state-vibrant h3 {
     font-size: 2.8rem;
-    font-weight: 950;
+    font-weight: 900;
     margin: 0;
     color: var(--text-main);
     letter-spacing: -0.04em;
@@ -653,7 +673,7 @@ const getRoleIcon = (role) => {
     border: none;
     padding: 14px 32px;
     border-radius: 16px;
-    font-weight: 850;
+    font-weight: 800;
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 10px 20px -5px var(--primary-glow);
@@ -694,7 +714,7 @@ const getRoleIcon = (role) => {
 .modal-header-vibrant h2 {
     margin: 0;
     font-size: 1.5rem;
-    font-weight: 850;
+    font-weight: 800;
     color: var(--text-main);
 }
 

@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import axios from '@/plugins/axios';
 import { usePermissions } from '@/composables/usePermissions';
+import ElitePagination from '@/components/ElitePagination.vue';
 
 const props = defineProps({
     permissions: {
@@ -24,8 +25,16 @@ const loadingSave = ref(false);
 const isSuccess = ref(false);
 const show = ref(false);
 
+const currentPage = ref(1);
+const itemsPerPage = ref(12);
+
 const activeProjectsCount = computed(() => projects.value.length); // Placeholder for status-based count
 const delayedProjectsCount = computed(() => projects.value.filter(p => (new Date() - new Date(p.created_at)) > 60*60*24*30*1000).length); // Example logic
+
+const paginatedProjects = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    return projects.value.slice(start, start + itemsPerPage.value);
+});
 
 // Fetch projects
 const fetchProjects = async () => {
@@ -158,7 +167,7 @@ defineExpose({ refreshData: fetchProjects });
       </div>
 
       <transition-group name="shuffled-grid" tag="div" class="grid-inner">
-        <div v-for="(project, idx) in projects" :key="project.id" 
+        <div v-for="(project, idx) in paginatedProjects" :key="project.id" 
              class="project-card-premium glass-morphic"
              :style="{ '--idx': idx }"
              @click="$emit('select-project', project.id); $emit('select-project-full', project)">
@@ -234,6 +243,14 @@ defineExpose({ refreshData: fetchProjects });
           <div class="card-glint-sweep"></div>
         </div>
       </transition-group>
+      <ElitePagination 
+          v-if="projects.length > 0"
+          :totalItems="projects.length" 
+          :itemsPerPage="itemsPerPage" 
+          :currentPage="currentPage" 
+          @update:currentPage="p => currentPage = p" 
+          style="margin-top: 20px"
+      />
     </div>
 
     <!-- Create/Edit Modal (Perspective HUD) -->
@@ -323,12 +340,12 @@ defineExpose({ refreshData: fetchProjects });
 .pulsing { animation: hPulse 2s infinite; }
 @keyframes hPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 var(--primary-glow); } 50% { transform: scale(1.05); box-shadow: 0 0 20px 5px var(--primary-glow); } }
 
-.h-text h1 { margin: 0; font-size: 2.2rem; font-weight: 950; color: var(--text-main); letter-spacing: -1px; }
+.h-text h1 { margin: 0; font-size: 2.2rem; font-weight: 900; color: var(--text-main); letter-spacing: -1px; }
 .h-text p { margin: 4px 0 0 0; color: var(--text-muted); opacity: 0.8; font-size: 1.1rem; }
 
 .h-stats-hud { display: flex; align-items: center; gap: 25px; padding: 12px 25px; border-radius: 24px; border: 1px solid var(--border-color); background: var(--bg-card); box-shadow: var(--shadow-sm); }
 .stat-mini { display: flex; flex-direction: column; align-items: center; }
-.stat-mini .v { font-size: 1.6rem; font-weight: 950; color: var(--text-main); }
+.stat-mini .v { font-size: 1.6rem; font-weight: 900; color: var(--text-main); }
 .stat-mini .l { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
 .stat-mini.urgent .v { color: var(--ds-red); }
 .stat-divider { width: 1px; height: 40px; background: var(--border-color); }
@@ -361,7 +378,7 @@ defineExpose({ refreshData: fetchProjects });
 .status-pulse { position: absolute; bottom: 8px; right: 8px; width: 10px; height: 10px; border-radius: 50%; z-index: 2; }
 .status-pulse.cyan { background: #06b6d4; box-shadow: 0 0 10px #06b6d4; animation: sPulse 2s infinite; }
 
-.p-title-block h3 { margin: 0; font-size: 1.3rem; font-weight: 850; color: var(--text-main); line-height: 1.2; }
+.p-title-block h3 { margin: 0; font-size: 1.3rem; font-weight: 800; color: var(--text-main); line-height: 1.2; }
 .p-id-tag { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; margin-top: 4px; }
 
 .p-description p { margin: 0; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -401,7 +418,7 @@ defineExpose({ refreshData: fetchProjects });
 
 /* Health HUD */
 .p-health-hud { display: flex; flex-direction: column; gap: 10px; }
-.health-label { display: flex; justify-content: space-between; font-weight: 850; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+.health-label { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
 .health-label .pct { color: #10b981; }
 .health-label .pct.pct-warn { color: var(--ds-red); }
 .health-label .pct.pct-ok { color: var(--ds-green); }
@@ -449,18 +466,18 @@ defineExpose({ refreshData: fetchProjects });
 .danger-ring { width: 90px; height: 90px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 10px auto; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
 .danger-ring.pulsing { animation: dangerPulse 2s infinite; }
 @keyframes dangerPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0.1); } }
-.mini-modal h3 { font-size: 1.8rem; font-weight: 950; color: white; margin: 0; }
+.mini-modal h3 { font-size: 1.8rem; font-weight: 900; color: white; margin: 0; }
 .mini-modal p { font-size: 1.1rem; color: var(--text-muted); font-weight: 600; line-height: 1.5; margin: 0 0 15px 0; }
 
 
 .modal-header-hud { padding: 30px; display: flex; align-items: center; gap: 20px; border-bottom: 1px solid var(--border-color); }
 .head-icon-ring { width: 55px; height: 55px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid var(--border-color); }
 .head-icon-ring.blue { background: var(--primary-bg); color: var(--primary); border-color: var(--primary-glow); }
-.head-text h3 { margin: 0; font-size: 1.4rem; font-weight: 950; color: var(--text-main); }
+.head-text h3 { margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
 .head-text p { margin: 2px 0 0 0; color: var(--text-muted); font-weight: 700; }
 
 .hyper-form { padding: 30px; display: flex; flex-direction: column; gap: 24px; }
-.form-group-hud label { display: block; font-weight: 850; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+.form-group-hud label { display: block; font-weight: 800; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
 .input-hud { display: flex; align-items: center; gap: 15px; padding: 12px 20px; border-radius: 16px; background: var(--bg-hover); border: 1px solid var(--border-color); }
 .input-hud i { color: var(--text-muted); font-size: 1.1rem; }
 .input-hud input, .input-hud textarea { background: transparent; border: none; flex: 1; color: var(--text-main); font-weight: 700; outline: none; }
@@ -521,7 +538,7 @@ defineExpose({ refreshData: fetchProjects });
 .empty-hall-p-premium h3 {
   margin: 0;
   font-size: 2.8rem;
-  font-weight: 950;
+  font-weight: 900;
   color: var(--text-main);
   letter-spacing: -0.04em;
 }

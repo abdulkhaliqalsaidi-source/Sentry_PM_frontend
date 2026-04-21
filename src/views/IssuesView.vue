@@ -1,13 +1,14 @@
 <script>
 import StateLoader from '@/components/StateLoader.vue';
 import StateEmpty from '@/components/StateEmpty.vue';
+import ElitePagination from '@/components/ElitePagination.vue';
 import axios from '@/plugins/axios';
 
 export default {
     name: 'IssuesView',
     components: {
-        StateLoader,
-        StateEmpty
+        StateEmpty,
+        ElitePagination
     },
     props: {
         codeIssues: { type: Array, default: () => [] },
@@ -21,6 +22,7 @@ export default {
     },
     data() {
         return {
+            currentPage: 1, itemsPerPage: 10,
             activeIssuesTab: 'code',
             selectedProject: 'all',
             showProjectFilter: false,
@@ -29,6 +31,11 @@ export default {
             showAllIssues: true,
             availableProjects: [],
             show: false
+        }
+    },
+    watch: {
+        activeIssuesTab() {
+            this.currentPage = 1;
         }
     },
     async mounted() {
@@ -82,6 +89,14 @@ export default {
                  issues = issues.filter(issue => issue.status === statusValue);
             }
             return issues;
+        },
+        paginatedIssues() {
+            const issues = this.activeIssuesTab === 'code' ? this.filteredCodeIssues : this.filteredNetworkIssues;
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            return issues.slice(start, start + this.itemsPerPage);
+        },
+        activeTabLength() {
+            return this.activeIssuesTab === 'code' ? this.filteredCodeIssues.length : this.filteredNetworkIssues.length;
         },
         resolvedCount() {
             return this.codeIssues.filter(i => i.status === 'resolved').length + this.networkIssues.filter(i => i.status === 'resolved').length;
@@ -209,7 +224,7 @@ export default {
                 </div>
 
                 <transition-group name="v-list" tag="div" class="v-list-rows">
-                    <div v-for="(item, idx) in (activeIssuesTab === 'code' ? filteredCodeIssues : filteredNetworkIssues)" 
+                    <div v-for="(item, idx) in paginatedIssues" 
                          :key="item.id" 
                          class="v-row glass-row" 
                          :class="{ 'hazard-row': item.status === 'open', 'expanded': expandedIssues[item.id] }"
@@ -290,6 +305,14 @@ export default {
                         <div class="hazard-edge" v-if="item.status === 'open'"></div>
                     </div>
                 </transition-group>
+                <div style="margin-top: 15px;">
+                    <ElitePagination 
+                        :totalItems="activeTabLength" 
+                        :itemsPerPage="itemsPerPage" 
+                        :currentPage="currentPage" 
+                        @update:currentPage="p => currentPage = p" 
+                    />
+                </div>
             </div>
         </div>
 
@@ -315,7 +338,7 @@ export default {
 .icon-glow.purple { background: linear-gradient(135deg, var(--primary), var(--indigo-800)); box-shadow: 0 10px 30px var(--primary-glow); }
 .glow-orb { position: absolute; inset: -5px; background: inherit; filter: blur(15px); opacity: 0.3; z-index: -1; }
 
-.header-text h1 { margin: 0; font-size: 2.2rem; font-weight: 950; color: var(--text-main); letter-spacing: -1px; }
+.header-text h1 { margin: 0; font-size: 2.2rem; font-weight: 900; color: var(--text-main); letter-spacing: -1px; }
 .header-text p { margin: 0; font-size: 1rem; color: var(--text-muted); opacity: 0.8; }
 
 .action-pill-hud { display: flex; align-items: center; padding: 6px 20px; border-radius: 100px; border: 1px solid var(--border-color); background: var(--bg-card); box-shadow: var(--shadow-sm); }
@@ -347,7 +370,7 @@ export default {
 .orange .s-icon { color: var(--ds-yellow); }
 
 .s-info { display: flex; flex-direction: column; line-height: 1; z-index: 2; }
-.s-val { font-size: 2rem; font-weight: 950; color: var(--text-main); }
+.s-val { font-size: 2rem; font-weight: 900; color: var(--text-main); }
 .s-lbl { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 6px; letter-spacing: 0.5px; }
 .s-glow { position: absolute; bottom: -20px; right: -20px; width: 100px; height: 100px; background: currentColor; filter: blur(40px); opacity: 0.05; }
 
@@ -390,7 +413,7 @@ export default {
 .diag-icon-hex.red { background: rgba(244, 63, 94, 0.1); color: var(--ds-red); }
 .diag-icon-hex.green { background: rgba(16, 185, 129, 0.1); color: var(--ds-green); }
 .diag-text { display: flex; flex-direction: column; }
-.diag-text .title { font-weight: 850; color: var(--text-main); font-size: 1.05rem; line-height: 1.3; }
+.diag-text .title { font-weight: 800; color: var(--text-main); font-size: 1.05rem; line-height: 1.3; }
 .diag-text .hash { font-family: monospace; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; margin-top: 2px; }
 
 .v-badge { padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); background: var(--bg-hover); border: 1px solid var(--border-color); }
@@ -425,7 +448,7 @@ export default {
 .ev-url-v:hover { opacity: 1; text-decoration: underline; color: var(--primary); }
 .ev-actions-v { margin-inline-start: auto; display: flex; gap: 10px; }
 
-.v-btn-xs { padding: 10px 18px; border-radius: 12px; border: none; font-weight: 850; cursor: pointer; transition: 0.2s; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+.v-btn-xs { padding: 10px 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
 .v-btn-xs.primary { background: linear-gradient(135deg, var(--primary), var(--indigo-800)); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
 .v-btn-xs.ghost { background: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); }
 .v-btn-xs.ghost:hover { border-color: var(--primary); color: var(--primary); }
@@ -482,7 +505,7 @@ export default {
 
 .v-empty-premium h3 {
     font-size: 2.8rem;
-    font-weight: 950;
+    font-weight: 900;
     color: var(--text-main);
     margin: 0;
     letter-spacing: -0.04em;
